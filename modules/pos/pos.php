@@ -79,6 +79,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_orders') {
+    header('Content-Type: application/json');
+    try {
+        $stmt = $pdo->query("
+            SELECT o.order_id, o.customer_name, o.total_amount, o.status AS order_status,
+                   o.created_at, u.full_name AS cashier_name,
+                   t.receipt_number, t.payment_method, t.discount_type, t.discount_amount,
+                   COUNT(oi.order_item_id) AS item_count
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.user_id
+            LEFT JOIN transactions t ON o.order_id = t.order_id
+            LEFT JOIN order_items oi ON o.order_id = oi.order_id
+            WHERE o.status IN ('pending', 'preparing', 'ready')
+            GROUP BY o.order_id
+            ORDER BY o.created_at DESC
+            LIMIT 50
+        ");
+        $orders = $stmt->fetchAll();
+        echo json_encode(['success' => true, 'orders' => $orders]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'update_status') {
+    header('Content-Type: application/json');
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $orderId = (int)($data['order_id'] ?? 0);
+        $status = $data['status'] ?? '';
+        $allowed = ['pending', 'preparing', 'ready', 'completed'];
+        if (!$orderId || !in_array($status, $allowed)) {
+            throw new Exception('Invalid parameters');
+        }
+        $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+        $stmt->execute([$status, $orderId]);
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_order_history') {
+    header('Content-Type: application/json');
+    try {
+        $stmt = $pdo->query("
+            SELECT o.order_id, o.customer_name, o.total_amount, o.status, o.created_at,
+                   u.full_name AS cashier_name,
+                   t.receipt_number, t.payment_method, t.discount_type, t.discount_amount
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.user_id
+            LEFT JOIN transactions t ON o.order_id = t.order_id
+            WHERE o.status = 'completed'
+            ORDER BY o.created_at DESC
+            LIMIT 100
+        ");
+        $orders = $stmt->fetchAll();
+
+        foreach ($orders as &$order) {
+            $stmt = $pdo->prepare("SELECT * FROM order_items WHERE order_id = ?");
+            $stmt->execute([$order['order_id']]);
+            $items = $stmt->fetchAll();
+
+            foreach ($items as &$item) {
+                $stmt = $pdo->prepare("SELECT * FROM order_addons WHERE order_item_id = ?");
+                $stmt->execute([$item['order_item_id']]);
+                $item['addons'] = $stmt->fetchAll();
+            }
+
+            $order['items'] = $items;
+        }
+        unset($order, $item);
+
+        echo json_encode(['success' => true, 'orders' => $orders]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $page_title = 'POS';
 $body_class = 'pos-page';
 
@@ -336,6 +418,315 @@ body.pos-page {
     border-radius: 10px;
     font-size: 10px;
     color: rgba(255,255,255,0.3);
+}
+
+.pos-sidebar-tabs {
+    display: flex;
+    padding: 6px 10px 0;
+    gap: 4px;
+}
+.s-tab {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+}
+.s-tab:hover {
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.04);
+}
+.s-tab.active {
+    color: var(--pos-gold);
+    background: rgba(200,169,110,0.08);
+}
+.queue-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--pos-gold);
+    color: #1a0f0a;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+.pos-queue {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+}
+.queue-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: default;
+    transition: all 0.15s;
+}
+.queue-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(200,169,110,0.2);
+}
+.queue-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.queue-order-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f5f0eb;
+}
+.queue-receipt {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+}
+.queue-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.queue-customer {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+}
+.queue-items {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+}
+.queue-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.queue-total {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--pos-gold);
+}
+.queue-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.queue-status.pending {
+    background: rgba(241,196,15,0.15);
+    color: #f1c40f;
+}
+.queue-status.preparing {
+    background: rgba(52,152,219,0.15);
+    color: #3498db;
+}
+.queue-status.ready {
+    background: rgba(46,204,113,0.15);
+    color: #2ecc71;
+}
+.queue-status-select {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+    min-width: 90px;
+    transition: border-color 0.15s;
+}
+.queue-status-select:hover {
+    border-color: rgba(255,255,255,0.3);
+}
+.queue-status-select option {
+    background: #2c1810;
+    color: #f5f0eb;
+    font-size: 10px;
+    padding: 4px;
+}
+.queue-cashier {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+}
+.queue-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+}
+.queue-empty {
+    text-align: center;
+    padding: 40px 16px;
+    color: rgba(255,255,255,0.2);
+}
+.queue-empty i {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 10px;
+}
+.queue-empty p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.pos-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+}
+.hist-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.hist-card:hover {
+    background: rgba(255,255,255,0.07);
+}
+.hist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hist-order-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f5f0eb;
+    margin-right: 10px;
+}
+.hist-receipt {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+}
+.hist-expand-icon {
+    color: rgba(255,255,255,0.25);
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+.hist-expanded .hist-expand-icon {
+    transform: rotate(180deg);
+}
+.hist-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    flex-wrap: wrap;
+}
+.hist-collapse {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.hist-expanded .hist-collapse {
+    display: block;
+}
+.hist-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 8px;
+}
+.hist-items {
+    margin-bottom: 8px;
+}
+.hist-item {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.hist-item:last-child {
+    border-bottom: none;
+}
+.hist-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hist-item-name {
+    font-size: 11px;
+    color: #f5f0eb;
+    font-weight: 500;
+}
+.hist-item-qty {
+    color: rgba(255,255,255,0.4);
+    font-weight: 400;
+}
+.hist-item-price {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+}
+.hist-item-cust {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 2px;
+}
+.hist-item-addons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 3px;
+}
+.hist-addon-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(200,169,110,0.1);
+    color: rgba(200,169,110,0.7);
+    font-size: 9px;
+    font-weight: 500;
+}
+.hist-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.hist-pmt-status {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #2ecc71;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(46,204,113,0.1);
+}
+.hist-total {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--pos-gold);
 }
 
 .pos-menu {
@@ -1317,7 +1708,7 @@ body.pos-page {
 
 @media (max-width: 992px) {
     .pos-wrapper { flex-direction: column; overflow-y: auto; }
-    .pos-sidebar { width: 100%; min-width: unset; flex-direction: row; flex-wrap: wrap; max-height: 180px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .pos-sidebar { width: 100%; min-width: unset; flex-direction: row; flex-wrap: wrap; max-height: 300px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .pos-brand { padding: 12px 14px; flex: 0 0 auto; display: flex; align-items: center; gap: 10px; border-bottom: none; }
     .pos-logo { width: 36px; height: 36px; margin: 0; }
     .pos-logo svg { width: 18px; height: 18px; }
@@ -1325,11 +1716,23 @@ body.pos-page {
     .pos-brand p { display: none; }
     .pos-cashier { padding: 10px 12px; border-bottom: none; flex: 0 0 auto; }
     .pos-search-wrap { padding: 8px 10px; flex: 1; min-width: 150px; }
+    .pos-sidebar-tabs { flex: 1 1 100%; display: flex; padding: 0 8px; }
+    .s-tab { font-size: 10px; padding: 6px 10px; border-radius: 0; }
     .pos-categories { flex: 1 1 100%; padding: 4px 8px; display: flex; gap: 4px; overflow-x: auto; }
     .pos-categories-label { display: none; }
     .cat-btn { white-space: nowrap; width: auto; padding: 5px 12px; font-size: 11px; }
     .cat-btn .cat-count { display: none; }
     .cat-btn.active::before { display: none; }
+    .pos-queue { flex: 1 1 100%; padding: 4px 8px; max-height: 100px; overflow-y: auto; }
+    .queue-card { padding: 8px 10px; margin-bottom: 4px; }
+    .queue-card-header, .queue-card-body, .queue-card-footer { margin-bottom: 2px; }
+    .queue-order-num { font-size: 11px; }
+    .queue-total { font-size: 13px; }
+    .queue-status-select { font-size: 9px; padding: 1px 4px; min-width: 70px; }
+    .pos-history { flex: 1 1 100%; padding: 4px 8px; max-height: 100px; overflow-y: auto; }
+    .hist-card { padding: 6px 8px; }
+    .hist-order-num { font-size: 11px; }
+    .hist-total { font-size: 13px; }
     .pos-menu { width: 100%; max-height: 50vh; }
     .pos-cart { width: 100%; min-width: unset; border-left: none; border-top: 1px solid rgba(0,0,0,0.06); max-height: 40vh; }
 }
@@ -1368,7 +1771,13 @@ body.pos-page {
             </div>
         </div>
 
-        <div class="pos-categories">
+        <div class="pos-sidebar-tabs">
+            <button class="s-tab active" data-stab="menu" onclick="switchSTab('menu', this)"><i class="bi bi-menu-app me-1"></i>Menu</button>
+            <button class="s-tab" data-stab="queue" onclick="switchSTab('queue', this)"><i class="bi bi-clock-history me-1"></i>Queue <span class="queue-badge" id="queueBadge">0</span></button>
+            <button class="s-tab" data-stab="history" onclick="switchSTab('history', this)"><i class="bi bi-archive me-1"></i>History</button>
+        </div>
+
+        <div class="pos-categories" id="stabMenu">
             <div class="pos-categories-label">Categories</div>
             <button class="cat-btn active" data-category="all" onclick="filterCategory('all', this)">
                 <i class="bi bi-grid-3x3-gap-fill me-2"></i>All <span class="cat-count"><?php echo count($products); ?></span>
@@ -1379,6 +1788,14 @@ body.pos-page {
                 <span class="cat-count"><?php echo count(array_filter($products, fn($p) => $p['category_id'] == $cat['category_id'])); ?></span>
             </button>
             <?php endforeach; ?>
+        </div>
+
+        <div class="pos-queue" id="stabQueue" style="display:none;">
+            <div id="ordersQueueList"></div>
+        </div>
+
+        <div class="pos-history" id="stabHistory" style="display:none;">
+            <div id="orderHistoryList"></div>
         </div>
     </aside>
 
@@ -2613,6 +3030,7 @@ document.getElementById('processPaymentBtn').addEventListener('click', function(
             if (pmtModal) pmtModal.hide();
             const successModal = new bootstrap.Modal(document.getElementById('successModal'));
             successModal.show();
+            fetchOrders();
         } else {
             alert('Error saving order: ' + (result.error || 'Unknown error'));
         }
@@ -2649,6 +3067,189 @@ document.getElementById('customizeModal').addEventListener('hidden.bs.modal', fu
 document.getElementById('checkoutBtn').addEventListener('click', function() {
     if (cart.length === 0) return;
     openReviewModal();
+});
+
+/* ── Orders Queue ── */
+function switchSTab(tab, btn) {
+    document.querySelectorAll('.s-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('stabMenu').style.display = tab === 'menu' ? '' : 'none';
+    document.getElementById('stabQueue').style.display = tab === 'queue' ? '' : 'none';
+    document.getElementById('stabHistory').style.display = tab === 'history' ? '' : 'none';
+    if (tab === 'queue') fetchOrders();
+    if (tab === 'history') fetchOrderHistory();
+}
+
+function fetchOrders() {
+    fetch(window.location.pathname + '?action=get_orders')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            renderOrders(data.orders);
+        })
+        .catch(() => {});
+}
+
+function renderOrders(orders) {
+    const container = document.getElementById('ordersQueueList');
+    const badge = document.getElementById('queueBadge');
+    badge.textContent = orders.length;
+    if (!orders.length) {
+        container.innerHTML = '<div class="queue-empty"><i class="bi bi-inbox"></i><p>No orders in queue</p></div>';
+        return;
+    }
+    const statusLabels = { pending: 'Pending', preparing: 'Preparing', ready: 'Ready for Pickup', completed: 'Completed' };
+    const statusClasses = { pending: 'pending', preparing: 'preparing', ready: 'ready', completed: 'completed' };
+    let html = '';
+    orders.forEach(o => {
+        const total = parseFloat(o.total_amount || 0).toFixed(2);
+        const status = o.order_status || 'pending';
+        const nextStatuses = { pending: ['pending','preparing','ready','completed'], preparing: ['preparing','ready','completed'], ready: ['ready','completed'], completed: ['completed'] };
+        const opts = nextStatuses[status] || [status];
+        let selHtml = '<select class="queue-status-select" onchange="updateOrderStatus(' + o.order_id + ', this.value)" data-order="' + o.order_id + '">';
+        opts.forEach(s => {
+            selHtml += '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + (statusLabels[s] || s) + '</option>';
+        });
+        selHtml += '</select>';
+        html += '<div class="queue-card">'
+            + '<div class="queue-card-header">'
+            + '<span class="queue-order-num">#' + o.order_id + '</span>'
+            + '<span class="queue-receipt">' + (o.receipt_number || '—') + '</span>'
+            + '</div>'
+            + '<div class="queue-card-body">'
+            + '<span class="queue-customer"><i class="bi bi-person me-1"></i>' + (o.customer_name || 'Walk-in') + '</span>'
+            + '<span class="queue-items">' + o.item_count + ' item' + (o.item_count > 1 ? 's' : '') + '</span>'
+            + '</div>'
+            + '<div class="queue-card-footer">'
+            + '<span class="queue-total">₱' + total + '</span>'
+            + '<span class="queue-status ' + statusClasses[status] + '">' + selHtml + '</span>'
+            + '</div>'
+            + '<div class="queue-cashier"><i class="bi bi-person-badge me-1"></i>' + (o.cashier_name || 'Unknown') + ' &middot; <span class="queue-time">' + (o.created_at || '') + '</span></div>'
+            + '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function updateOrderStatus(orderId, status) {
+    fetch(window.location.pathname + '?action=update_status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId, status: status })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            if (status === 'completed') {
+                const card = document.querySelector('.queue-status-select[data-order="' + orderId + '"]').closest('.queue-card');
+                if (card) card.style.opacity = '0.3';
+            }
+            setTimeout(fetchOrders, 300);
+        }
+    })
+    .catch(() => {});
+}
+
+/* ── Order History ── */
+function fetchOrderHistory() {
+    fetch(window.location.pathname + '?action=get_order_history')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            renderOrderHistory(data.orders);
+        })
+        .catch(() => {});
+}
+
+function formatCustomizations(item) {
+    const parts = [];
+    if (item.size) parts.push(item.size);
+    if (item.temperature) parts.push(item.temperature);
+    if (item.sugar_level && item.sugar_level !== 'regular') parts.push('Sugar: ' + item.sugar_level);
+    if (item.ice_level && item.ice_level !== 'regular') parts.push('Ice: ' + item.ice_level);
+    if (item.instructions) parts.push('Note: ' + item.instructions);
+    return parts.length ? parts.join(' &middot; ') : '';
+}
+
+function renderOrderHistory(orders) {
+    const container = document.getElementById('orderHistoryList');
+    if (!orders.length) {
+        container.innerHTML = '<div class="queue-empty"><i class="bi bi-clock-history"></i><p>No order history</p></div>';
+        return;
+    }
+    let html = '';
+    orders.forEach(o => {
+        const items = o.items || [];
+        const grandTotal = parseFloat(o.total_amount || 0).toFixed(2);
+        const dt = o.created_at || '';
+        const pmt = o.payment_method || '—';
+        const rec = o.receipt_number || '—';
+        const cashier = o.cashier_name || 'Unknown';
+        const customer = o.customer_name || 'Walk-in';
+
+        let itemsHtml = '';
+        items.forEach(item => {
+            const qty = item.quantity || 1;
+            const price = parseFloat(item.price || 0).toFixed(2);
+            const cust = formatCustomizations(item);
+            const addons = item.addons || [];
+            let addonHtml = '';
+            addons.forEach(a => {
+                addonHtml += '<span class="hist-addon-tag">' + a.addon_name + ' (+₱' + parseFloat(a.price || 0).toFixed(2) + ')</span>';
+            });
+
+            itemsHtml += '<div class="hist-item">'
+                + '<div class="hist-item-top">'
+                + '<span class="hist-item-name">' + (item.product_name || 'Product') + ' <span class="hist-item-qty">x' + qty + '</span></span>'
+                + '<span class="hist-item-price">₱' + (qty * price).toFixed(2) + '</span>'
+                + '</div>';
+            if (cust) {
+                itemsHtml += '<div class="hist-item-cust">' + cust + '</div>';
+            }
+            if (addonHtml) {
+                itemsHtml += '<div class="hist-item-addons">' + addonHtml + '</div>';
+            }
+            itemsHtml += '</div>';
+        });
+
+        html += '<div class="hist-card" onclick="toggleHistCollapse(this)">'
+            + '<div class="hist-header">'
+            + '<div>'
+            + '<span class="hist-order-num">#' + o.order_id + '</span>'
+            + '<span class="hist-receipt">' + rec + '</span>'
+            + '</div>'
+            + '<span class="hist-expand-icon"><i class="bi bi-chevron-down"></i></span>'
+            + '</div>'
+            + '<div class="hist-meta">'
+            + '<span><i class="bi bi-person me-1"></i>' + customer + '</span>'
+            + '<span><i class="bi bi-person-badge me-1"></i>' + cashier + '</span>'
+            + '<span><i class="bi bi-credit-card me-1"></i>' + pmt + '</span>'
+            + '</div>'
+            + '<div class="hist-collapse">'
+            + '<div class="hist-time"><i class="bi bi-clock me-1"></i>' + dt + '</div>'
+            + '<div class="hist-items">' + itemsHtml + '</div>'
+            + '<div class="hist-footer">'
+            + '<span class="hist-pmt-status">Paid</span>'
+            + '<span class="hist-total">₱' + grandTotal + '</span>'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function toggleHistCollapse(card) {
+    card.classList.toggle('hist-expanded');
+    const icon = card.querySelector('.hist-expand-icon i');
+    if (card.classList.contains('hist-expanded')) {
+        icon.className = 'bi bi-chevron-up';
+    } else {
+        icon.className = 'bi bi-chevron-down';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(fetchOrders, 500);
+    setInterval(fetchOrders, 15000);
 });
 </script>
 
