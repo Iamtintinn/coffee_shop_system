@@ -645,6 +645,21 @@ body.pos-page {
     font-size: 10px;
     color: rgba(255,255,255,0.35);
 }
+.hist-queue-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 5px;
+    background: var(--pos-gold);
+    color: #1a0f0a;
+    font-size: 11px;
+    font-weight: 800;
+    margin-right: 8px;
+    letter-spacing: 0.5px;
+}
 .hist-expand-icon {
     color: rgba(255,255,255,0.25);
     font-size: 12px;
@@ -1795,7 +1810,6 @@ body.pos-page {
 
         <div class="pos-sidebar-tabs">
             <button class="s-tab active" data-stab="menu" onclick="switchSTab('menu', this)"><i class="bi bi-menu-app me-1"></i>Menu</button>
-            <button class="s-tab" data-stab="queue" onclick="switchSTab('queue', this)"><i class="bi bi-clock-history me-1"></i>Queue <span class="queue-badge" id="queueBadge">0</span></button>
             <button class="s-tab" data-stab="history" onclick="switchSTab('history', this)"><i class="bi bi-archive me-1"></i>History</button>
         </div>
 
@@ -1810,10 +1824,6 @@ body.pos-page {
                 <span class="cat-count"><?php echo count(array_filter($products, fn($p) => $p['category_id'] == $cat['category_id'])); ?></span>
             </button>
             <?php endforeach; ?>
-        </div>
-
-        <div class="pos-queue" id="stabQueue" style="display:none;">
-            <div id="ordersQueueList"></div>
         </div>
 
         <div class="pos-history" id="stabHistory" style="display:none;">
@@ -3052,7 +3062,11 @@ document.getElementById('processPaymentBtn').addEventListener('click', function(
             if (pmtModal) pmtModal.hide();
             const successModal = new bootstrap.Modal(document.getElementById('successModal'));
             successModal.show();
-            fetchOrders();
+
+            const printWindow = window.open('receipt.php?order_id=' + result.order_id, '_blank', 'width=400,height=600');
+            if (printWindow) {
+                printWindow.focus();
+            }
         } else {
             alert('Error saving order: ' + (result.error || 'Unknown error'));
         }
@@ -3096,9 +3110,7 @@ function switchSTab(tab, btn) {
     document.querySelectorAll('.s-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('stabMenu').style.display = tab === 'menu' ? '' : 'none';
-    document.getElementById('stabQueue').style.display = tab === 'queue' ? '' : 'none';
     document.getElementById('stabHistory').style.display = tab === 'history' ? '' : 'none';
-    if (tab === 'queue') fetchOrders();
     if (tab === 'history') fetchOrderHistory();
 }
 
@@ -3237,6 +3249,7 @@ function renderOrderHistory(orders) {
             + '<div class="hist-header">'
             + '<div>'
             + '<span class="hist-order-num">#' + o.order_id + '</span>'
+            + '<span class="hist-queue-num">Q' + String(o.order_id).padStart(3, '0') + '</span>'
             + '<span class="hist-receipt">' + rec + '</span>'
             + '</div>'
             + '<span class="hist-expand-icon"><i class="bi bi-chevron-down"></i></span>'
@@ -3268,11 +3281,6 @@ function toggleHistCollapse(card) {
         icon.className = 'bi bi-chevron-down';
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(fetchOrders, 500);
-    setInterval(fetchOrders, 15000);
-});
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

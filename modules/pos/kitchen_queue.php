@@ -206,11 +206,11 @@ html, body {
     margin-bottom: 10px;
 }
 .kq-order-num {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--kq-text);
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--kq-gold);
     line-height: 1;
-    letter-spacing: -0.5px;
+    letter-spacing: 1px;
 }
 .kq-receipt {
     font-size: 11px;
@@ -485,7 +485,7 @@ function renderKitchenOrders(orders) {
 
         html += '<div class="kq-card" id="kqCard-' + o.order_id + '">'
             + '<div class="kq-card-header">'
-            + '<span class="kq-order-num">#' + o.order_id + '</span>'
+            + '<span class="kq-order-num">Q' + String(o.order_id).padStart(3, '0') + '</span>'
             + '<span class="kq-receipt">' + rec + '</span>'
             + '</div>'
             + '<div class="kq-meta">'
