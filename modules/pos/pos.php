@@ -1834,15 +1834,33 @@ body.pos-page {
         </div>
         <div class="pos-products" id="productGrid">
             <?php foreach ($products as $product):
-                $imgPath = !empty($product['image']) && file_exists(__DIR__ . '/../../uploads/products/' . $product['image'])
+                $productImg = !empty($product['image']) && file_exists(__DIR__ . '/../../uploads/products/' . $product['image'])
                     ? BASE_URL . '/uploads/products/' . htmlspecialchars($product['image'])
                     : null;
+                if (!$productImg) {
+                    $slug = strtolower(str_replace(' ', '_', $product['name']));
+                    $extensions = ['jpeg', 'jpg', 'webp', 'png'];
+                    foreach ($extensions as $ext) {
+                        $assetPath = __DIR__ . '/../../assets/images/' . $slug . '.' . $ext;
+                        if (file_exists($assetPath)) {
+                            $productImg = BASE_URL . '/assets/images/' . $slug . '.' . $ext;
+                            break;
+                        }
+                    }
+                }
                 $available = $product['status'] === 'available';
             ?>
             <div class="product-card<?php echo $available ? '' : ' unavailable'; ?>" data-id="<?php echo $product['product_id']; ?>" data-category="<?php echo $product['category_id']; ?>" data-category-name="<?php echo htmlspecialchars($product['category_name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo $product['price']; ?>" onclick="<?php echo $available ? "openCustomizationModal({$product['product_id']}, '" . htmlspecialchars(addslashes($product['name'])) . "', {$product['price']})" : ''; ?>">
                 <div class="img-wrap">
-                    <?php if ($imgPath): ?>
-                    <img src="<?php echo $imgPath; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
+                    <?php if ($productImg): ?>
+                    <img src="<?php echo $productImg; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <svg class="no-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                        <line x1="6" y1="1" x2="6" y2="4"/>
+                        <line x1="10" y1="1" x2="10" y2="4"/>
+                        <line x1="14" y1="1" x2="14" y2="4"/>
+                    </svg>
                     <?php else: ?>
                     <svg class="no-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
