@@ -6,6 +6,79 @@ require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../includes/auth.php';
 requireLogin();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'save_order') {
+    header('Content-Type: application/json');
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) throw new Exception('Invalid request data');
+
+        $pdo->beginTransaction();
+
+        $totalAmount = (float)($data['grand_total'] ?? 0);
+        $customerName = !empty($data['customer_name']) ? $data['customer_name'] : 'Walk-in Customer';
+        $userId = $_SESSION['user_id'] ?? null;
+
+        $stmt = $pdo->prepare("INSERT INTO orders (customer_name, user_id, total_amount, status, created_at) VALUES (?, ?, ?, 'pending', NOW())");
+        $stmt->execute([$customerName, $userId, $totalAmount]);
+        $orderId = $pdo->lastInsertId();
+
+        $addonNameMap = [
+            'addon_extra_shot'    => ['Extra Espresso Shot', 20],
+            'addon_vanilla'       => ['Vanilla Syrup', 15],
+            'addon_caramel'       => ['Caramel Syrup', 15],
+            'addon_whipped_cream' => ['Whipped Cream', 10],
+            'addon_soy_milk'      => ['Soy Milk', 25],
+            'addon_almond_milk'   => ['Almond Milk', 25]
+        ];
+
+        foreach ($data['items'] as $item) {
+            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, product_name, quantity, price, size, temperature, sugar_level, ice_level, instructions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $orderId,
+                (int)($item['id'] ?? 0),
+                $item['name'] ?? '',
+                (int)($item['qty'] ?? 1),
+                (float)($item['unit_price'] ?? 0),
+                $item['size'] ?? null,
+                $item['temp'] ?? null,
+                $item['sugar'] ?? null,
+                $item['ice'] ?? null,
+                $item['instructions'] ?? null
+            ]);
+            $orderItemId = $pdo->lastInsertId();
+
+            if (!empty($item['addon_ids'])) {
+                foreach ($item['addon_ids'] as $addonId) {
+                    if (isset($addonNameMap[$addonId])) {
+                        $stmt = $pdo->prepare("INSERT INTO order_addons (order_item_id, addon_name, price) VALUES (?, ?, ?)");
+                        $stmt->execute([$orderItemId, $addonNameMap[$addonId][0], $addonNameMap[$addonId][1]]);
+                    }
+                }
+            }
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO transactions (order_id, amount, payment_method, reference_number, cash_received, change_due, discount_type, discount_amount, receipt_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $orderId,
+            $totalAmount,
+            $data['payment_method'] ?? 'cash',
+            $data['reference_number'] ?? null,
+            $data['cash_received'] ?? null,
+            $data['change_due'] ?? null,
+            $data['discount_type'] ?? null,
+            (float)($data['discount_amount'] ?? 0),
+            $data['receipt_number'] ?? null
+        ]);
+
+        $pdo->commit();
+        echo json_encode(['success' => true, 'order_id' => $orderId, 'receipt_number' => $data['receipt_number'] ?? '']);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $page_title = 'POS';
 $body_class = 'pos-page';
 
@@ -2305,11 +2378,11 @@ function renderCart() {
 }
 
 function updateSummary() {
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    const tax = subtotal * 0.12;
-    const total = subtotal + tax;
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const vatExclusive = total / 1.12;
+    const tax = total - vatExclusive;
 
-    document.getElementById('subtotal').textContent = '₱' + subtotal.toFixed(2);
+    document.getElementById('subtotal').textContent = '₱' + total.toFixed(2);
     document.getElementById('tax').textContent = '₱' + tax.toFixed(2);
     document.getElementById('total').textContent = '₱' + total.toFixed(2);
 }
@@ -2361,15 +2434,15 @@ function renderReviewBody() {
     cart.forEach((item, i) => {
         itemsHtml += buildReviewCardHtml(item, i, getItemImgHtml, sizeLabel, tempLabel, iceLabel);
     });
-    const subtotal = cart.reduce((s, item) => s + item.price * item.qty, 0);
-    const tax = subtotal * 0.12;
-    const total = subtotal + tax;
+    const total = cart.reduce((s, item) => s + item.price * item.qty, 0);
+    const vatExclusive = total / 1.12;
+    const tax = total - vatExclusive;
     return `
         <div style="margin-bottom:8px;">${itemsHtml}</div>
         <div class="card review-summary-card">
             <div class="card-body">
                 <div class="rsc-header">Order Summary</div>
-                <div class="rsc-row"><span>Subtotal</span><span id="reviewSubtotal">₱${subtotal.toFixed(2)}</span></div>
+                <div class="rsc-row"><span>Subtotal</span><span id="reviewSubtotal">₱${total.toFixed(2)}</span></div>
                 <div class="rsc-row"><span>Discount</span><span id="reviewDiscountDisplay">₱0.00</span></div>
                 <div class="rsc-row"><span>VAT</span><span id="reviewVat">₱${tax.toFixed(2)}</span></div>
                 <div class="rsc-row rsc-grand-total"><span>Grand Total</span><span id="reviewGrandTotal">₱${total.toFixed(2)}</span></div>
@@ -2477,21 +2550,80 @@ function onCashReceivedChange() {
 }
 
 document.getElementById('processPaymentBtn').addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
     const gtEl = document.getElementById('pmtGrandTotal');
-    const grandTotal = gtEl.textContent;
+    const grandTotal = parseFloat(gtEl.textContent.replace(/[₱,]/g, '')) || 0;
+    const pmtMethod = document.querySelector('input[name="pmtMethod"]:checked');
+    const discountType = document.getElementById('discountType') ? document.getElementById('discountType').value : 'none';
+    const cashReceived = parseFloat(document.getElementById('cashReceived').value) || 0;
+    const changeDue = parseFloat(document.getElementById('changeDisplay').textContent.replace(/[₱,]/g, '')) || 0;
+    const custType = document.querySelector('input[name="custType"]:checked');
+    const customerName = (custType && custType.value === 'registered' && document.getElementById('customerSearchInput').value.trim())
+        ? document.getElementById('customerSearchInput').value.trim() : 'Walk-in Customer';
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) + ' ' + now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
     const receiptNum = 'POS-' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + String(Math.floor(Math.random() * 9999) + 1).padStart(4,'0');
 
-    document.getElementById('sReceipt').textContent = receiptNum;
-    document.getElementById('sDate').textContent = dateStr;
-    document.getElementById('sTotal').textContent = grandTotal;
+    const items = cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        qty: item.qty,
+        unit_price: item.price,
+        size: item.size,
+        temp: item.temp,
+        sugar: item.sugar,
+        ice: item.ice,
+        instructions: item.instructions,
+        addon_ids: item.addons || []
+    }));
 
-    const pmtModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
-    if (pmtModal) pmtModal.hide();
-    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-    successModal.show();
+    function readVal(id) {
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.textContent.replace(/[₱,]/g, '')) || 0 : 0;
+    }
+
+    fetch('pos.php?action=save_order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            items: items,
+            customer_name: customerName,
+            payment_method: pmtMethod ? pmtMethod.value : 'cash',
+            cash_received: cashReceived || null,
+            change_due: changeDue || null,
+            discount_type: discountType !== 'none' && discountType !== 'promo' ? discountType : null,
+            discount_amount: discountType !== 'none' ? readVal('reviewDiscountDisplay') : 0,
+            reference_number: receiptNum,
+            receipt_number: receiptNum,
+            grand_total: grandTotal
+        })
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('sReceipt').textContent = receiptNum;
+            document.getElementById('sDate').textContent = dateStr;
+            document.getElementById('sTotal').textContent = '₱' + grandTotal.toFixed(2);
+
+            const pmtModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+            if (pmtModal) pmtModal.hide();
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        } else {
+            alert('Error saving order: ' + (result.error || 'Unknown error'));
+        }
+    })
+    .catch(err => {
+        alert('Error saving order: ' + err.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-check2-circle me-2"></i>Process Payment';
+    });
 });
 
 document.getElementById('newOrderBtn').addEventListener('click', function() {
