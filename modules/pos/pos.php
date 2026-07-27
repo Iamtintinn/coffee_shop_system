@@ -515,6 +515,18 @@ body.pos-page {
     text-align: right;
 }
 
+.cart-item .item-details {
+    display: block;
+    font-size: 10px;
+    color: #b8a99a;
+    font-weight: 400;
+    margin-top: 1px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .cart-item .remove-btn {
     background: none;
     border: none;
@@ -524,10 +536,40 @@ body.pos-page {
     font-size: 16px;
     line-height: 1;
     transition: color 0.15s;
+    flex-shrink: 0;
 }
 
 .cart-item .remove-btn:hover {
     color: #c62828;
+}
+
+.cart-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid #e0d5c9;
+    border-radius: 5px;
+    width: 28px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #8b7d6b;
+    transition: all 0.15s;
+    padding: 0;
+}
+
+.action-btn:hover {
+    background: #2c1810;
+    border-color: #2c1810;
+    color: #f5f0eb;
 }
 
 .cart-empty {
@@ -907,6 +949,74 @@ body.pos-page {
     </div>
 </div>
 
+<div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 16px 48px rgba(0,0,0,0.2);overflow:hidden;">
+            <div class="modal-header" style="border:none;background:#faf7f3;padding:20px 24px 12px;">
+                <h5 class="modal-title" style="font-family:'Playfair Display',serif;font-weight:700;color:#2c1810;font-size:18px;">
+                    <i class="bi bi-receipt me-2"></i>Item Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:16px 24px 20px;">
+                <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom:1px solid #f0ebe5;">
+                    <div id="viewProductImg" style="width:60px;height:60px;border-radius:12px;background:#f5f0eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                    </div>
+                    <div>
+                        <h6 id="viewProductName" style="font-size:16px;font-weight:700;color:#2c1810;margin:0 0 2px;"></h6>
+                        <span id="viewProductPrice" style="font-size:15px;font-weight:700;color:#c8a96e;"></span>
+                    </div>
+                </div>
+
+                <div id="viewDetailsBody">
+                    <div class="view-row"><span class="view-label">Size</span><span class="view-value" id="viewSize">—</span></div>
+                    <div class="view-row"><span class="view-label">Temperature</span><span class="view-value" id="viewTemp">—</span></div>
+                    <div class="view-row"><span class="view-label">Sugar Level</span><span class="view-value" id="viewSugar">—</span></div>
+                    <div class="view-row"><span class="view-label">Ice Level</span><span class="view-value" id="viewIce">—</span></div>
+                    <div class="view-row"><span class="view-label">Add-ons</span><span class="view-value" id="viewAddons">None</span></div>
+                    <div class="view-row"><span class="view-label">Quantity</span><span class="view-value" id="viewQty">—</span></div>
+                    <div class="view-row"><span class="view-label">Instructions</span><span class="view-value" id="viewInstructions">None</span></div>
+                    <div class="view-row view-total"><span class="view-label">Item Subtotal</span><span class="view-value" id="viewSubtotal" style="font-weight:700;color:#c8a96e;font-size:16px;">—</span></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border:none;padding:0 24px 20px;">
+                <button type="button" class="btn" data-bs-dismiss="modal" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e0d5c9;background:transparent;color:#5d4037;font-weight:600;font-size:13px;font-family:'Inter',sans-serif;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.view-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f0eb;
+}
+.view-row:last-of-type {
+    border-bottom: none;
+}
+.view-row.view-total {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 2px solid #f0ebe5;
+}
+.view-label {
+    font-size: 13px;
+    color: #8b7d6b;
+    font-weight: 500;
+}
+.view-value {
+    font-size: 13px;
+    color: #2c1810;
+    font-weight: 600;
+    text-align: right;
+    max-width: 60%;
+}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let cart = [];
@@ -968,16 +1078,26 @@ let modalProductId = null;
 let modalProductName = '';
 let modalProductPrice = 0;
 let modalQtyVal = 1;
+let modalEditIndex = null;
 
-function openCustomizationModal(id, name, price) {
+function openCustomizationModal(id, name, price, editIndex) {
     modalProductId = id;
     modalProductName = name;
     modalProductPrice = price;
     modalQtyVal = 1;
+    modalEditIndex = editIndex != null ? editIndex : null;
 
     document.getElementById('modalProductName').textContent = name;
     document.getElementById('modalProductPrice').textContent = '₱' + price.toFixed(2);
     document.getElementById('modalQty').textContent = '1';
+    document.getElementById('modalInstructions').value = '';
+
+    document.querySelectorAll('.size-opt, .temp-opt, .sugar-opt, .ice-opt').forEach(r => r.checked = false);
+    document.getElementById('size-small').checked = true;
+    document.getElementById('temp-hot').checked = true;
+    document.getElementById('sugar-50').checked = true;
+    document.getElementById('ice-regular').checked = true;
+    document.querySelectorAll('#modalAddons input[type="checkbox"]').forEach(c => c.checked = false);
 
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
     if (card) {
@@ -990,9 +1110,60 @@ function openCustomizationModal(id, name, price) {
         }
     }
 
+    if (editIndex != null && cart[editIndex]) {
+        const item = cart[editIndex];
+        populateModalSelections(item);
+    }
+
+    const btn = document.getElementById('modalAddBtn');
+    if (editIndex != null) {
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i>Update Cart';
+    } else {
+        btn.innerHTML = '<i class="bi bi-cart-plus me-2"></i>Add to Cart';
+    }
+
     updateModalTotal();
     const modal = new bootstrap.Modal(document.getElementById('customizeModal'));
     modal.show();
+}
+
+function populateModalSelections(item) {
+    const sizeRadio = document.querySelector(`.size-opt[value="${item.size || 'small'}"]`);
+    if (sizeRadio) sizeRadio.checked = true;
+
+    const tempRadio = document.querySelector(`.temp-opt[value="${item.temp || 'hot'}"]`);
+    if (tempRadio) tempRadio.checked = true;
+
+    const sugarRadio = document.querySelector(`.sugar-opt[value="${item.sugar || '50%'}"]`);
+    if (sugarRadio) sugarRadio.checked = true;
+
+    const iceRadio = document.querySelector(`.ice-opt[value="${item.ice || 'regular'}"]`);
+    if (iceRadio) iceRadio.checked = true;
+
+    document.querySelectorAll('#modalAddons input[type="checkbox"]').forEach(c => {
+        c.checked = item.addons && item.addons.includes(c.id);
+    });
+
+    document.getElementById('modalQty').textContent = item.qty || 1;
+    modalQtyVal = item.qty || 1;
+    document.getElementById('modalInstructions').value = item.instructions || '';
+}
+
+function collectModalSelections() {
+    const size = document.querySelector('.size-opt:checked');
+    const temp = document.querySelector('.temp-opt:checked');
+    const sugar = document.querySelector('.sugar-opt:checked');
+    const ice = document.querySelector('.ice-opt:checked');
+    const addons = [];
+    document.querySelectorAll('#modalAddons input[type="checkbox"]:checked').forEach(c => addons.push(c.id));
+    return {
+        size: size ? size.value : 'small',
+        temp: temp ? temp.value : 'hot',
+        sugar: sugar ? sugar.value : '50%',
+        ice: ice ? ice.value : 'regular',
+        addons: addons,
+        instructions: document.getElementById('modalInstructions').value
+    };
 }
 
 function modalQtyChange(delta) {
@@ -1009,12 +1180,46 @@ function updateModalTotal() {
 document.getElementById('modalAddBtn').addEventListener('click', function() {
     if (!modalProductId) return;
 
-    const existing = cart.find(item => item.id === modalProductId);
-    if (existing) {
-        existing.qty += modalQtyVal;
+    const sel = collectModalSelections();
+
+    if (modalEditIndex != null && cart[modalEditIndex]) {
+        cart[modalEditIndex] = {
+            id: modalProductId,
+            name: modalProductName,
+            price: modalProductPrice,
+            qty: modalQtyVal,
+            size: sel.size,
+            temp: sel.temp,
+            sugar: sel.sugar,
+            ice: sel.ice,
+            addons: sel.addons,
+            instructions: sel.instructions
+        };
     } else {
-        cart.push({ id: modalProductId, name: modalProductName, price: modalProductPrice, qty: modalQtyVal });
+        const existingIdx = cart.findIndex(item => item.id === modalProductId
+            && item.size === sel.size
+            && item.temp === sel.temp
+            && item.sugar === sel.sugar
+            && item.ice === sel.ice
+            && JSON.stringify(item.addons) === JSON.stringify(sel.addons));
+        if (existingIdx > -1) {
+            cart[existingIdx].qty += modalQtyVal;
+        } else {
+            cart.push({
+                id: modalProductId,
+                name: modalProductName,
+                price: modalProductPrice,
+                qty: modalQtyVal,
+                size: sel.size,
+                temp: sel.temp,
+                sugar: sel.sugar,
+                ice: sel.ice,
+                addons: sel.addons,
+                instructions: sel.instructions
+            });
+        }
     }
+
     renderCart();
 
     const card = document.querySelector(`.product-card[data-id="${modalProductId}"]`);
@@ -1023,9 +1228,55 @@ document.getElementById('modalAddBtn').addEventListener('click', function() {
         setTimeout(() => card.style.transform = '', 150);
     }
 
+    modalEditIndex = null;
     const modal = bootstrap.Modal.getInstance(document.getElementById('customizeModal'));
     if (modal) modal.hide();
 });
+
+function openViewModal(index) {
+    const item = cart[index];
+    if (!item) return;
+
+    const card = document.querySelector(`.product-card[data-id="${item.id}"]`);
+    const imgWrap = document.getElementById('viewProductImg');
+    if (card) {
+        const img = card.querySelector('.img-wrap img');
+        if (img) {
+            imgWrap.innerHTML = '<img src="' + img.src + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;">';
+        }
+    }
+
+    document.getElementById('viewProductName').textContent = item.name;
+    document.getElementById('viewProductPrice').textContent = '₱' + item.price.toFixed(2);
+
+    const sizeLabel = { small:'Small', medium:'Medium', large:'Large' };
+    document.getElementById('viewSize').textContent = sizeLabel[item.size] || '—';
+
+    const tempLabel = { hot:'Hot', iced:'Iced' };
+    document.getElementById('viewTemp').textContent = tempLabel[item.temp] || '—';
+
+    document.getElementById('viewSugar').textContent = item.sugar || '—';
+
+    const iceLabel = { none:'No Ice', less:'Less Ice', regular:'Regular Ice', extra:'Extra Ice' };
+    document.getElementById('viewIce').textContent = iceLabel[item.ice] || '—';
+
+    const addonNames = { addon_extra_shot:'Extra Shot', addon_vanilla:'Vanilla Syrup', addon_caramel:'Caramel Sauce', addon_whipped_cream:'Whipped Cream', addon_soy_milk:'Soy Milk', addon_almond_milk:'Almond Milk' };
+    const addons = (item.addons || []).map(a => addonNames[a] || a);
+    document.getElementById('viewAddons').textContent = addons.length ? addons.join(', ') : 'None';
+
+    document.getElementById('viewQty').textContent = item.qty;
+    document.getElementById('viewInstructions').textContent = item.instructions || 'None';
+    document.getElementById('viewSubtotal').textContent = '₱' + (item.price * item.qty).toFixed(2);
+
+    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+    modal.show();
+}
+
+function editCartItem(index) {
+    const item = cart[index];
+    if (!item) return;
+    openCustomizationModal(item.id, item.name, item.price, index);
+}
 
 function addToCart(id, name, price) {
     const existing = cart.find(item => item.id === id);
@@ -1080,11 +1331,18 @@ function renderCart() {
     let html = '';
     cart.forEach((item, i) => {
         const lineTotal = item.price * item.qty;
+        const details = [];
+        if (item.size) details.push(item.size.charAt(0).toUpperCase() + item.size.slice(1));
+        if (item.temp) details.push(item.temp.charAt(0).toUpperCase() + item.temp.slice(1));
+        if (item.sugar) details.push('Sugar: ' + item.sugar);
+        if (item.ice) details.push('Ice: ' + item.ice.replace('none','No').replace('less','Less').replace('regular','Regular').replace('extra','Extra'));
+        if (item.addons && item.addons.length) details.push('+' + item.addons.length + ' add-on' + (item.addons.length > 1 ? 's' : ''));
         html += `
             <div class="cart-item">
+                <button class="remove-btn" onclick="removeFromCart(${i})" title="Remove"><i class="bi bi-x"></i></button>
                 <div class="cart-item-info">
                     <div class="item-name">${item.name}</div>
-                    <div class="item-price">₱${item.price.toFixed(2)}</div>
+                    <div class="item-price">₱${item.price.toFixed(2)} <span class="item-details">${details.join(' | ')}</span></div>
                 </div>
                 <div class="cart-item-qty">
                     <button class="qty-btn" onclick="updateQty(${i}, -1)">−</button>
@@ -1092,7 +1350,10 @@ function renderCart() {
                     <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
                 </div>
                 <div class="cart-item-total">₱${lineTotal.toFixed(2)}</div>
-                <button class="remove-btn" onclick="removeFromCart(${i})"><i class="bi bi-x"></i></button>
+                <div class="cart-actions">
+                    <button class="action-btn" onclick="openViewModal(${i})" title="View Details"><i class="bi bi-eye"></i></button>
+                    <button class="action-btn" onclick="editCartItem(${i})" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                </div>
             </div>
         `;
     });
