@@ -325,7 +325,26 @@ body.pos-page {
 }
 
 .pos-search-wrap {
-    padding: 12px 14px;
+    padding: 4px 10px 8px;
+}
+.pos-kq-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 14px;
+    margin: 2px 10px 6px;
+    border-radius: 8px;
+    background: rgba(200,169,110,0.08);
+    color: var(--pos-gold);
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+}
+.pos-kq-link:hover {
+    background: rgba(200,169,110,0.18);
+    color: var(--pos-gold-light);
 }
 
 .pos-search-wrap .input-group {
@@ -1716,6 +1735,7 @@ body.pos-page {
     .pos-brand p { display: none; }
     .pos-cashier { padding: 10px 12px; border-bottom: none; flex: 0 0 auto; }
     .pos-search-wrap { padding: 8px 10px; flex: 1; min-width: 150px; }
+    .pos-kq-link { flex: 0 0 auto; margin: 4px 10px; padding: 5px 12px; font-size: 10px; }
     .pos-sidebar-tabs { flex: 1 1 100%; display: flex; padding: 0 8px; }
     .s-tab { font-size: 10px; padding: 6px 10px; border-radius: 0; }
     .pos-categories { flex: 1 1 100%; padding: 4px 8px; display: flex; gap: 4px; overflow-x: auto; }
@@ -1770,6 +1790,8 @@ body.pos-page {
                 <input type="text" class="form-control" id="posSearch" placeholder="Search products..." autocomplete="off">
             </div>
         </div>
+
+        <a href="kitchen_queue.php" class="pos-kq-link"><i class="bi bi-clipboard-check me-1"></i>Kitchen Queue</a>
 
         <div class="pos-sidebar-tabs">
             <button class="s-tab active" data-stab="menu" onclick="switchSTab('menu', this)"><i class="bi bi-menu-app me-1"></i>Menu</button>
