@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/constants.php';
-require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../includes/auth.php';
 requireLogin();
-redirect(BASE_URL . '/modules/customers/customers.php');
+$page_title = 'Customer History';
+require_once __DIR__ . '/../../includes/dashboard_header.php';
+?>
+<?php require_once __DIR__ . '/../../includes/dashboard_footer.php'; ?>
