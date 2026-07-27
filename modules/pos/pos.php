@@ -748,7 +748,7 @@ body.pos-page {
 </div>
 
 <div class="modal fade" id="customizeModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 16px 48px rgba(0,0,0,0.2);overflow:hidden;">
             <div class="modal-header" style="border:none;background:#faf7f3;padding:20px 24px 12px;">
                 <h5 class="modal-title" style="font-family:'Playfair Display',serif;font-weight:700;color:#2c1810;font-size:18px;">
@@ -756,7 +756,8 @@ body.pos-page {
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" style="padding:16px 24px 20px;">
+            <div class="modal-body" style="padding:12px 24px 8px;max-height:70vh;">
+
                 <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom:1px solid #f0ebe5;">
                     <div id="modalProductImg" style="width:64px;height:64px;border-radius:12px;background:#f5f0eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
@@ -764,6 +765,86 @@ body.pos-page {
                     <div>
                         <h6 id="modalProductName" style="font-size:15px;font-weight:700;color:#2c1810;margin:0 0 2px;"></h6>
                         <span id="modalProductPrice" style="font-size:17px;font-weight:700;color:#c8a96e;"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Size</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm opt-btn active" data-opt="size" data-value="small" style="padding:6px 20px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Small</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="size" data-value="medium" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Medium</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="size" data-value="large" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Large</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Temperature</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm opt-btn active" data-opt="temp" data-value="hot" style="padding:6px 20px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Hot</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="temp" data-value="iced" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Iced</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="temp" data-value="blended" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Blended</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Sugar Level</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="none" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">None</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="less" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Less</button>
+                        <button type="button" class="btn btn-sm opt-btn active" data-opt="sugar" data-value="regular" style="padding:6px 16px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Regular</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="extra" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Extra</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Ice Level</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="none" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">None</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="less" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Less</button>
+                        <button type="button" class="btn btn-sm opt-btn active" data-opt="ice" data-value="regular" style="padding:6px 16px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Regular</button>
+                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="extra" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Extra</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Add-ons</label>
+                    <div class="row g-2" id="modalAddons">
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_extra_shot" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_extra_shot" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Extra Shot <span style="color:#c8a96e;font-weight:600;">+₱25</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_vanilla" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_vanilla" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Vanilla Syrup <span style="color:#c8a96e;font-weight:600;">+₱15</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_caramel" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_caramel" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Caramel Sauce <span style="color:#c8a96e;font-weight:600;">+₱15</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_whipped_cream" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_whipped_cream" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Whipped Cream <span style="color:#c8a96e;font-weight:600;">+₱20</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_soy_milk" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_soy_milk" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Soy Milk <span style="color:#c8a96e;font-weight:600;">+₱20</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
+                                <input class="form-check-input" type="checkbox" id="addon_almond_milk" style="accent-color:#c8a96e;cursor:pointer;">
+                                <label class="form-check-label" for="addon_almond_milk" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Almond Milk <span style="color:#c8a96e;font-weight:600;">+₱25</span></label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -776,7 +857,12 @@ body.pos-page {
                     </div>
                 </div>
 
-                <div id="modalTotalDisplay" style="background:#faf7f3;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+                <div class="mb-2">
+                    <label for="modalInstructions" style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Special Instructions</label>
+                    <textarea id="modalInstructions" class="form-control" rows="2" placeholder="Any special requests..." style="font-size:13px;border:1.5px solid #e0d5c9;border-radius:8px;padding:8px 12px;background:#fffdfb;color:#3e3a36;resize:none;font-family:'Inter',sans-serif;"></textarea>
+                </div>
+
+                <div id="modalTotalDisplay" style="background:#faf7f3;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
                     <span style="font-size:13px;font-weight:500;color:#5d4037;">Total</span>
                     <span id="modalTotal" style="font-size:18px;font-weight:700;color:#c8a96e;">₱0.00</span>
                 </div>
@@ -784,7 +870,7 @@ body.pos-page {
             <div class="modal-footer" style="border:none;padding:0 24px 20px;gap:8px;">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #e0d5c9;background:transparent;color:#5d4037;font-weight:600;font-size:13px;font-family:'Inter',sans-serif;">Cancel</button>
                 <button type="button" id="modalAddBtn" class="btn" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#2c1810,#5d4037);color:#f5f0eb;font-weight:700;font-size:13px;font-family:'Inter',sans-serif;letter-spacing:0.3px;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(44,24,16,0.3)'" onmouseout="this.style.boxShadow='none'">
-                    <i class="bi bi-cart-plus me-2"></i>Add to Order
+                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
                 </button>
             </div>
         </div>
@@ -832,6 +918,20 @@ document.getElementById('posSearch').addEventListener('input', function() {
         if (show) visible++;
     });
     document.getElementById('productCount').textContent = visible + ' item' + (visible !== 1 ? 's' : '');
+});
+
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.opt-btn');
+    if (!btn) return;
+    const opt = btn.dataset.opt;
+    document.querySelectorAll(`.opt-btn[data-opt="${opt}"]`).forEach(b => {
+        b.style.borderColor = '#e0d5c9';
+        b.style.background = '#fffdfb';
+        b.style.color = '#5d4037';
+    });
+    btn.style.borderColor = '#c8a96e';
+    btn.style.background = 'rgba(200,169,110,0.1)';
+    btn.style.color = '#2c1810';
 });
 
 let modalProductId = null;
