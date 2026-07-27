@@ -576,6 +576,22 @@ body.pos-page {
     color: var(--pos-gold);
 }
 
+.size-opt:checked + .size-label,
+.temp-opt:checked + .temp-label,
+.sugar-opt:checked + .sugar-label,
+.ice-opt:checked + .ice-label {
+    background: rgba(200,169,110,0.1) !important;
+    border-color: #c8a96e !important;
+    color: #2c1810 !important;
+    box-shadow: none !important;
+}
+.size-label:focus,
+.temp-label:focus,
+.sugar-label:focus,
+.ice-label:focus {
+    box-shadow: none !important;
+}
+
 .pos-checkout-btn {
     width: 100%;
     padding: 12px;
@@ -770,39 +786,53 @@ body.pos-page {
 
                 <div class="mb-3">
                     <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Size</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm opt-btn active" data-opt="size" data-value="small" style="padding:6px 20px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Small</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="size" data-value="medium" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Medium</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="size" data-value="large" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Large</button>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check size-opt" name="size" id="size-small" value="small" checked>
+                        <label class="btn btn-outline-secondary size-label" for="size-small" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Small</label>
+                        <input type="radio" class="btn-check size-opt" name="size" id="size-medium" value="medium">
+                        <label class="btn btn-outline-secondary size-label" for="size-medium" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Medium</label>
+                        <input type="radio" class="btn-check size-opt" name="size" id="size-large" value="large">
+                        <label class="btn btn-outline-secondary size-label" for="size-large" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Large</label>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="tempSection">
                     <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Temperature</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm opt-btn active" data-opt="temp" data-value="hot" style="padding:6px 20px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Hot</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="temp" data-value="iced" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Iced</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="temp" data-value="blended" style="padding:6px 20px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Blended</button>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check temp-opt" name="temp" id="temp-hot" value="hot" checked>
+                        <label class="btn btn-outline-secondary temp-label" for="temp-hot" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Hot</label>
+                        <input type="radio" class="btn-check temp-opt" name="temp" id="temp-iced" value="iced">
+                        <label class="btn btn-outline-secondary temp-label" for="temp-iced" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Iced</label>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Sugar Level</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="none" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">None</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="less" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Less</button>
-                        <button type="button" class="btn btn-sm opt-btn active" data-opt="sugar" data-value="regular" style="padding:6px 16px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Regular</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="sugar" data-value="extra" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Extra</button>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-0" value="0%">
+                        <label class="btn btn-outline-secondary sugar-label" for="sugar-0" style="padding:7px 6px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">0%</label>
+                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-25" value="25%">
+                        <label class="btn btn-outline-secondary sugar-label" for="sugar-25" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">25%</label>
+                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-50" value="50%" checked>
+                        <label class="btn btn-outline-secondary sugar-label" for="sugar-50" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">50%</label>
+                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-75" value="75%">
+                        <label class="btn btn-outline-secondary sugar-label" for="sugar-75" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">75%</label>
+                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-100" value="100%">
+                        <label class="btn btn-outline-secondary sugar-label" for="sugar-100" style="padding:7px 6px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">100%</label>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Ice Level</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="none" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">None</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="less" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Less</button>
-                        <button type="button" class="btn btn-sm opt-btn active" data-opt="ice" data-value="regular" style="padding:6px 16px;border-radius:8px;border:1.5px solid #c8a96e;background:rgba(200,169,110,0.1);color:#2c1810;font-size:12px;font-weight:600;transition:all 0.15s;">Regular</button>
-                        <button type="button" class="btn btn-sm opt-btn" data-opt="ice" data-value="extra" style="padding:6px 16px;border-radius:8px;border:1.5px solid #e0d5c9;background:#fffdfb;color:#5d4037;font-size:12px;font-weight:600;transition:all 0.15s;">Extra</button>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-none" value="none">
+                        <label class="btn btn-outline-secondary ice-label" for="ice-none" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">No Ice</label>
+                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-less" value="less">
+                        <label class="btn btn-outline-secondary ice-label" for="ice-less" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Less Ice</label>
+                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-regular" value="regular" checked>
+                        <label class="btn btn-outline-secondary ice-label" for="ice-regular" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Regular Ice</label>
+                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-extra" value="extra">
+                        <label class="btn btn-outline-secondary ice-label" for="ice-extra" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Extra Ice</label>
                     </div>
                 </div>
 
@@ -850,10 +880,10 @@ body.pos-page {
 
                 <div class="mb-3">
                     <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Quantity</label>
-                    <div class="d-inline-flex align-items-center gap-2" style="background:#f5f0eb;border-radius:10px;padding:4px;">
-                        <button class="btn btn-sm" onclick="modalQtyChange(-1)" style="border:none;border-radius:8px;width:38px;height:38px;font-size:18px;font-weight:600;color:#5d4037;background:transparent;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.background='#2c1810';this.style.color='#f5f0eb'" onmouseout="this.style.background='transparent';this.style.color='#5d4037'">−</button>
-                        <span id="modalQty" style="min-width:36px;text-align:center;font-size:18px;font-weight:700;color:#2c1810;">1</span>
-                        <button class="btn btn-sm" onclick="modalQtyChange(1)" style="border:none;border-radius:8px;width:38px;height:38px;font-size:18px;font-weight:600;color:#5d4037;background:transparent;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.background='#2c1810';this.style.color='#f5f0eb'" onmouseout="this.style.background='transparent';this.style.color='#5d4037'">+</button>
+                    <div class="d-inline-flex align-items-center">
+                        <button type="button" class="btn btn-outline-secondary" onclick="modalQtyChange(-1)" style="width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;font-size:18px;font-weight:600;">−</button>
+                        <span id="modalQty" style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:38px;border-top:1.5px solid #e0d5c9;border-bottom:1.5px solid #e0d5c9;font-size:16px;font-weight:700;color:#2c1810;background:#fffdfb;">1</span>
+                        <button type="button" class="btn btn-outline-secondary" onclick="modalQtyChange(1)" style="width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;font-size:18px;font-weight:600;">+</button>
                     </div>
                 </div>
 
