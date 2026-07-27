@@ -618,20 +618,339 @@ body.pos-page {
     color: var(--pos-gold);
 }
 
-.size-opt:checked + .size-label,
-.temp-opt:checked + .temp-label,
-.sugar-opt:checked + .sugar-label,
-.ice-opt:checked + .ice-label {
-    background: rgba(200,169,110,0.1) !important;
-    border-color: #c8a96e !important;
-    color: #2c1810 !important;
-    box-shadow: none !important;
+.seg-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
 }
-.size-label:focus,
-.temp-label:focus,
-.sugar-label:focus,
-.ice-label:focus {
-    box-shadow: none !important;
+.seg-group input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.seg-group label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1.5px solid #d4c5b5;
+    background: #fffdfb;
+    color: #5d4037;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    white-space: nowrap;
+}
+.seg-group label:hover {
+    border-color: #b8a080;
+    background: #faf5ef;
+}
+.seg-group input:checked + label {
+    background: #4e342e !important;
+    border-color: #4e342e !important;
+    color: #f5f0eb !important;
+}
+
+.addon-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid #ede5db;
+    border-radius: 10px;
+    background: #fffdfb;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.addon-card:hover {
+    border-color: #d4c5b5;
+    background: #faf7f3;
+}
+.addon-card.has-check {
+    border-color: #c8a96e;
+    background: rgba(200,169,110,0.06);
+}
+.addon-card input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.addon-card .check-box {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #d4c5b5;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-size: 11px;
+    color: transparent;
+}
+.addon-card.has-check .check-box {
+    background: #4e342e;
+    border-color: #4e342e;
+    color: #f5f0eb;
+}
+.addon-card .addon-name {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 500;
+    color: #2c1810;
+}
+.addon-card .addon-price {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c8a96e;
+    white-space: nowrap;
+}
+
+.modal-product-summary {
+    display: flex;
+    gap: 16px;
+    padding: 0 0 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #ede5db;
+}
+.modal-product-summary .summary-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 14px;
+    background: #f5f0eb;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-product-summary .summary-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.modal-product-summary .summary-img svg {
+    width: 36px;
+    height: 36px;
+    color: #c8b8a8;
+}
+.modal-product-summary .summary-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.modal-product-summary .summary-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2c1810;
+    margin: 0 0 2px;
+    line-height: 1.2;
+}
+.modal-product-summary .summary-info .cat-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #c8a96e;
+    background: rgba(200,169,110,0.1);
+    padding: 2px 10px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    width: fit-content;
+}
+.modal-product-summary .summary-info .base-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #c8a96e;
+}
+
+.modal-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+    margin-bottom: 14px;
+}
+.modal-option {
+    margin-bottom: 10px;
+}
+.modal-option.full-width {
+    grid-column: 1 / -1;
+}
+.modal-option .opt-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #8b7d6b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 7px;
+}
+
+.addons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.qty-summary-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 14px;
+    align-items: start;
+}
+
+.qty-control {
+    display: inline-flex;
+    align-items: center;
+    background: #f5f0eb;
+    border-radius: 10px;
+    padding: 3px;
+}
+.qty-control button {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: #5d4037;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+}
+.qty-control button:hover {
+    background: #4e342e;
+    color: #f5f0eb;
+}
+.qty-control .qty-value {
+    min-width: 40px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2c1810;
+}
+
+.order-summary-card {
+    background: #faf5ef;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+.os-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #5d4037;
+    margin-bottom: 5px;
+}
+.os-row.os-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c1810;
+    padding-top: 8px;
+    border-top: 1.5px solid #ede5db;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+.os-row.os-total .os-val {
+    color: #c8a96e;
+    font-size: 18px;
+}
+.os-row .os-val {
+    font-weight: 600;
+}
+
+.notes-area {
+    font-size: 13px;
+    border: 1.5px solid #ede5db;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fffdfb;
+    color: #3e3a36;
+    resize: none;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    transition: border-color 0.15s;
+}
+.notes-area:focus {
+    outline: none;
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+}
+.notes-area::placeholder {
+    color: #b8a99a;
+}
+
+.modal-footer-bar {
+    display: flex;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid #ede5db;
+    background: #faf7f3;
+}
+.modal-btn {
+    flex: 1;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+}
+.modal-btn-cancel {
+    background: #fffdfb;
+    border: 1.5px solid #ede5db;
+    color: #5d4037;
+}
+.modal-btn-cancel:hover {
+    background: #f5f0eb;
+}
+.modal-btn-primary {
+    background: linear-gradient(135deg, #4e342e, #3e2723);
+    color: #f5f0eb;
+}
+.modal-btn-primary:hover {
+    box-shadow: 0 4px 16px rgba(78,52,46,0.3);
+}
+
+@media (max-width: 576px) {
+    .modal-options-grid {
+        grid-template-columns: 1fr;
+    }
+    .addons-grid {
+        grid-template-columns: 1fr;
+    }
+    .qty-summary-row {
+        grid-template-columns: 1fr;
+    }
+    .modal-product-summary .summary-img {
+        width: 70px;
+        height: 70px;
+    }
+    .modal-product-summary .summary-info h3 {
+        font-size: 15px;
+    }
 }
 
 .pos-checkout-btn {
@@ -747,7 +1066,7 @@ body.pos-page {
                     : null;
                 $available = $product['status'] === 'available';
             ?>
-            <div class="product-card<?php echo $available ? '' : ' unavailable'; ?>" data-id="<?php echo $product['product_id']; ?>" data-category="<?php echo $product['category_id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo $product['price']; ?>" onclick="<?php echo $available ? "openCustomizationModal({$product['product_id']}, '" . htmlspecialchars(addslashes($product['name'])) . "', {$product['price']})" : ''; ?>">
+            <div class="product-card<?php echo $available ? '' : ' unavailable'; ?>" data-id="<?php echo $product['product_id']; ?>" data-category="<?php echo $product['category_id']; ?>" data-category-name="<?php echo htmlspecialchars($product['category_name'] ?? ''); ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo $product['price']; ?>" onclick="<?php echo $available ? "openCustomizationModal({$product['product_id']}, '" . htmlspecialchars(addslashes($product['name'])) . "', {$product['price']})" : ''; ?>">
                 <div class="img-wrap">
                     <?php if ($imgPath): ?>
                     <img src="<?php echo $imgPath; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
@@ -806,144 +1125,143 @@ body.pos-page {
 </div>
 
 <div class="modal fade" id="customizeModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-        <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 16px 48px rgba(0,0,0,0.2);overflow:hidden;">
-            <div class="modal-header" style="border:none;background:#faf7f3;padding:20px 24px 12px;">
-                <h5 class="modal-title" style="font-family:'Playfair Display',serif;font-weight:700;color:#2c1810;font-size:18px;">
-                    <i class="bi bi-pencil-square me-2"></i>Customize Product
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" style="padding:12px 24px 8px;max-height:70vh;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" style="max-height:90vh;">
+        <div class="modal-content" style="border-radius:18px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;">
+            <div class="modal-body" style="padding:20px 24px 8px;max-height:calc(90vh - 68px);overflow-y:auto;">
 
-                <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom:1px solid #f0ebe5;">
-                    <div id="modalProductImg" style="width:64px;height:64px;border-radius:12px;background:#f5f0eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                <div class="modal-product-summary" id="modalProductSummary">
+                    <div class="summary-img" id="modalProductImg">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                    </div>
+                    <div class="summary-info">
+                        <span class="cat-badge" id="modalCategoryBadge">Coffee</span>
+                        <h3 id="modalProductName">Product Name</h3>
+                        <span class="base-price" id="modalProductPrice">₱0.00</span>
+                    </div>
+                </div>
+
+                <div class="modal-options-grid">
+                    <div class="modal-option">
+                        <span class="opt-label">Size</span>
+                        <div class="seg-group">
+                            <input type="radio" class="size-opt" name="size" id="size-small" value="small" checked>
+                            <label for="size-small">Small</label>
+                            <input type="radio" class="size-opt" name="size" id="size-medium" value="medium">
+                            <label for="size-medium">Medium</label>
+                            <input type="radio" class="size-opt" name="size" id="size-large" value="large">
+                            <label for="size-large">Large</label>
+                        </div>
+                    </div>
+                    <div class="modal-option" id="tempSection">
+                        <span class="opt-label">Temperature</span>
+                        <div class="seg-group">
+                            <input type="radio" class="temp-opt" name="temp" id="temp-hot" value="hot" checked>
+                            <label for="temp-hot">Hot</label>
+                            <input type="radio" class="temp-opt" name="temp" id="temp-iced" value="iced">
+                            <label for="temp-iced">Iced</label>
+                        </div>
+                    </div>
+                    <div class="modal-option">
+                        <span class="opt-label">Sugar</span>
+                        <div class="seg-group">
+                            <input type="radio" class="sugar-opt" name="sugar" id="sugar-0" value="0%">
+                            <label for="sugar-0">0%</label>
+                            <input type="radio" class="sugar-opt" name="sugar" id="sugar-25" value="25%">
+                            <label for="sugar-25">25%</label>
+                            <input type="radio" class="sugar-opt" name="sugar" id="sugar-50" value="50%" checked>
+                            <label for="sugar-50">50%</label>
+                            <input type="radio" class="sugar-opt" name="sugar" id="sugar-75" value="75%">
+                            <label for="sugar-75">75%</label>
+                            <input type="radio" class="sugar-opt" name="sugar" id="sugar-100" value="100%">
+                            <label for="sugar-100">100%</label>
+                        </div>
+                    </div>
+                    <div class="modal-option">
+                        <span class="opt-label">Ice</span>
+                        <div class="seg-group">
+                            <input type="radio" class="ice-opt" name="ice" id="ice-none" value="none">
+                            <label for="ice-none">No Ice</label>
+                            <input type="radio" class="ice-opt" name="ice" id="ice-less" value="less">
+                            <label for="ice-less">Less Ice</label>
+                            <input type="radio" class="ice-opt" name="ice" id="ice-regular" value="regular" checked>
+                            <label for="ice-regular">Regular Ice</label>
+                            <input type="radio" class="ice-opt" name="ice" id="ice-extra" value="extra">
+                            <label for="ice-extra">Extra Ice</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-option full-width">
+                    <span class="opt-label">Add-ons</span>
+                    <div class="addons-grid" id="modalAddons">
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_extra_shot" data-price="25">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Extra Shot</span>
+                            <span class="addon-price">+₱25</span>
+                        </div>
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_vanilla" data-price="15">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Vanilla Syrup</span>
+                            <span class="addon-price">+₱15</span>
+                        </div>
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_caramel" data-price="15">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Caramel Sauce</span>
+                            <span class="addon-price">+₱15</span>
+                        </div>
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_whipped_cream" data-price="20">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Whipped Cream</span>
+                            <span class="addon-price">+₱20</span>
+                        </div>
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_soy_milk" data-price="20">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Soy Milk</span>
+                            <span class="addon-price">+₱20</span>
+                        </div>
+                        <div class="addon-card" onclick="toggleAddon(this)">
+                            <input type="checkbox" id="addon_almond_milk" data-price="25">
+                            <span class="check-box"><i class="bi bi-check"></i></span>
+                            <span class="addon-name">Almond Milk</span>
+                            <span class="addon-price">+₱25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qty-summary-row">
+                    <div class="modal-option" style="margin-bottom:0;">
+                        <span class="opt-label">Quantity</span>
+                        <div class="qty-control">
+                            <button onclick="modalQtyChange(-1)">−</button>
+                            <span class="qty-value" id="modalQty">1</span>
+                            <button onclick="modalQtyChange(1)">+</button>
+                        </div>
                     </div>
                     <div>
-                        <h6 id="modalProductName" style="font-size:15px;font-weight:700;color:#2c1810;margin:0 0 2px;"></h6>
-                        <span id="modalProductPrice" style="font-size:17px;font-weight:700;color:#c8a96e;"></span>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Size</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check size-opt" name="size" id="size-small" value="small" checked>
-                        <label class="btn btn-outline-secondary size-label" for="size-small" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Small</label>
-                        <input type="radio" class="btn-check size-opt" name="size" id="size-medium" value="medium">
-                        <label class="btn btn-outline-secondary size-label" for="size-medium" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Medium</label>
-                        <input type="radio" class="btn-check size-opt" name="size" id="size-large" value="large">
-                        <label class="btn btn-outline-secondary size-label" for="size-large" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Large</label>
-                    </div>
-                </div>
-
-                <div class="mb-3" id="tempSection">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Temperature</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check temp-opt" name="temp" id="temp-hot" value="hot" checked>
-                        <label class="btn btn-outline-secondary temp-label" for="temp-hot" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Hot</label>
-                        <input type="radio" class="btn-check temp-opt" name="temp" id="temp-iced" value="iced">
-                        <label class="btn btn-outline-secondary temp-label" for="temp-iced" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Iced</label>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Sugar Level</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-0" value="0%">
-                        <label class="btn btn-outline-secondary sugar-label" for="sugar-0" style="padding:7px 6px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">0%</label>
-                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-25" value="25%">
-                        <label class="btn btn-outline-secondary sugar-label" for="sugar-25" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">25%</label>
-                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-50" value="50%" checked>
-                        <label class="btn btn-outline-secondary sugar-label" for="sugar-50" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">50%</label>
-                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-75" value="75%">
-                        <label class="btn btn-outline-secondary sugar-label" for="sugar-75" style="padding:7px 6px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">75%</label>
-                        <input type="radio" class="btn-check sugar-opt" name="sugar" id="sugar-100" value="100%">
-                        <label class="btn btn-outline-secondary sugar-label" for="sugar-100" style="padding:7px 6px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">100%</label>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Ice Level</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-none" value="none">
-                        <label class="btn btn-outline-secondary ice-label" for="ice-none" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">No Ice</label>
-                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-less" value="less">
-                        <label class="btn btn-outline-secondary ice-label" for="ice-less" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Less Ice</label>
-                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-regular" value="regular" checked>
-                        <label class="btn btn-outline-secondary ice-label" for="ice-regular" style="padding:7px 12px;font-size:12px;font-weight:600;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Regular Ice</label>
-                        <input type="radio" class="btn-check ice-opt" name="ice" id="ice-extra" value="extra">
-                        <label class="btn btn-outline-secondary ice-label" for="ice-extra" style="padding:7px 12px;font-size:12px;font-weight:600;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;transition:all 0.15s;">Extra Ice</label>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Add-ons</label>
-                    <div class="row g-2" id="modalAddons">
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_extra_shot" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_extra_shot" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Extra Shot <span style="color:#c8a96e;font-weight:600;">+₱25</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_vanilla" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_vanilla" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Vanilla Syrup <span style="color:#c8a96e;font-weight:600;">+₱15</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_caramel" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_caramel" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Caramel Sauce <span style="color:#c8a96e;font-weight:600;">+₱15</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_whipped_cream" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_whipped_cream" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Whipped Cream <span style="color:#c8a96e;font-weight:600;">+₱20</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_soy_milk" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_soy_milk" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Soy Milk <span style="color:#c8a96e;font-weight:600;">+₱20</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-check" style="padding:8px 12px;border:1.5px solid #f0ebe5;border-radius:8px;margin:0;background:#fffdfb;">
-                                <input class="form-check-input" type="checkbox" id="addon_almond_milk" style="accent-color:#c8a96e;cursor:pointer;">
-                                <label class="form-check-label" for="addon_almond_milk" style="font-size:12px;color:#5d4037;cursor:pointer;width:100%;">Almond Milk <span style="color:#c8a96e;font-weight:600;">+₱25</span></label>
-                            </div>
+                        <span class="opt-label" style="display:block;font-size:10px;font-weight:600;color:#8b7d6b;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px;">Order Summary</span>
+                        <div class="order-summary-card">
+                            <div class="os-row"><span>Subtotal</span><span class="os-val" id="osSubtotal">₱0.00</span></div>
+                            <div class="os-row"><span>Add-ons</span><span class="os-val" id="osAddons">₱0.00</span></div>
+                            <div class="os-row"><span>Qty</span><span class="os-val" id="osQty">1</span></div>
+                            <div class="os-row os-total"><span>TOTAL</span><span class="os-val" id="modalTotal">₱0.00</span></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Quantity</label>
-                    <div class="d-inline-flex align-items-center">
-                        <button type="button" class="btn btn-outline-secondary" onclick="modalQtyChange(-1)" style="width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 8px;border-color:#e0d5c9;color:#5d4037;font-size:18px;font-weight:600;">−</button>
-                        <span id="modalQty" style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:38px;border-top:1.5px solid #e0d5c9;border-bottom:1.5px solid #e0d5c9;font-size:16px;font-weight:700;color:#2c1810;background:#fffdfb;">1</span>
-                        <button type="button" class="btn btn-outline-secondary" onclick="modalQtyChange(1)" style="width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:0 8px 8px 0;border-color:#e0d5c9;color:#5d4037;font-size:18px;font-weight:600;">+</button>
-                    </div>
+                <div class="modal-option full-width" style="margin-bottom:4px;">
+                    <span class="opt-label">Notes</span>
+                    <textarea id="modalInstructions" class="notes-area" rows="2" placeholder="• Less sweet&#10;• No whipped cream&#10;• Extra hot"></textarea>
                 </div>
 
-                <div class="mb-2">
-                    <label for="modalInstructions" style="font-size:11px;font-weight:600;color:#5d4037;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;">Special Instructions</label>
-                    <textarea id="modalInstructions" class="form-control" rows="2" placeholder="Any special requests..." style="font-size:13px;border:1.5px solid #e0d5c9;border-radius:8px;padding:8px 12px;background:#fffdfb;color:#3e3a36;resize:none;font-family:'Inter',sans-serif;"></textarea>
-                </div>
-
-                <div id="modalTotalDisplay" style="background:#faf7f3;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-                    <span style="font-size:13px;font-weight:500;color:#5d4037;">Total</span>
-                    <span id="modalTotal" style="font-size:18px;font-weight:700;color:#c8a96e;">₱0.00</span>
-                </div>
             </div>
-            <div class="modal-footer" style="border:none;padding:0 24px 20px;gap:8px;">
-                <button type="button" class="btn" data-bs-dismiss="modal" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #e0d5c9;background:transparent;color:#5d4037;font-weight:600;font-size:13px;font-family:'Inter',sans-serif;">Cancel</button>
-                <button type="button" id="modalAddBtn" class="btn" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#2c1810,#5d4037);color:#f5f0eb;font-weight:700;font-size:13px;font-family:'Inter',sans-serif;letter-spacing:0.3px;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(44,24,16,0.3)'" onmouseout="this.style.boxShadow='none'">
-                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
-                </button>
+            <div class="modal-footer-bar">
+                <button type="button" class="modal-btn modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="modalAddBtn" class="modal-btn modal-btn-primary"><i class="bi bi-cart-plus me-2"></i>Add to Cart</button>
             </div>
         </div>
     </div>
@@ -1097,18 +1415,24 @@ function openCustomizationModal(id, name, price, editIndex) {
     document.getElementById('temp-hot').checked = true;
     document.getElementById('sugar-50').checked = true;
     document.getElementById('ice-regular').checked = true;
-    document.querySelectorAll('#modalAddons input[type="checkbox"]').forEach(c => c.checked = false);
+    document.querySelectorAll('#modalAddons input[type="checkbox"]').forEach(c => {
+        c.checked = false;
+        c.closest('.addon-card') && c.closest('.addon-card').classList.remove('has-check');
+    });
 
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
+    let catName = '';
     if (card) {
+        catName = card.dataset.categoryName || '';
         const img = card.querySelector('.img-wrap img');
         const imgWrap = document.getElementById('modalProductImg');
         if (img) {
             imgWrap.innerHTML = '<img src="' + img.src + '" alt="' + name + '" style="width:100%;height:100%;object-fit:cover;">';
         } else {
-            imgWrap.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+            imgWrap.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
         }
     }
+    document.getElementById('modalCategoryBadge').textContent = catName || 'Product';
 
     if (editIndex != null && cart[editIndex]) {
         const item = cart[editIndex];
@@ -1141,12 +1465,23 @@ function populateModalSelections(item) {
     if (iceRadio) iceRadio.checked = true;
 
     document.querySelectorAll('#modalAddons input[type="checkbox"]').forEach(c => {
-        c.checked = item.addons && item.addons.includes(c.id);
+        const checked = item.addons && item.addons.includes(c.id);
+        c.checked = checked;
+        const card = c.closest('.addon-card');
+        if (card) card.classList.toggle('has-check', checked);
     });
 
     document.getElementById('modalQty').textContent = item.qty || 1;
     modalQtyVal = item.qty || 1;
     document.getElementById('modalInstructions').value = item.instructions || '';
+}
+
+function toggleAddon(el) {
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    cb.checked = !cb.checked;
+    el.classList.toggle('has-check', cb.checked);
+    updateModalTotal();
 }
 
 function collectModalSelections() {
@@ -1173,8 +1508,17 @@ function modalQtyChange(delta) {
 }
 
 function updateModalTotal() {
-    const total = modalProductPrice * modalQtyVal;
-    document.getElementById('modalTotal').textContent = '₱' + total.toFixed(2);
+    const subtotal = modalProductPrice * modalQtyVal;
+    let addonTotal = 0;
+    document.querySelectorAll('#modalAddons input[type="checkbox"]:checked').forEach(c => {
+        addonTotal += parseFloat(c.dataset.price) || 0;
+    });
+    addonTotal *= modalQtyVal;
+    const grandTotal = subtotal + addonTotal;
+    document.getElementById('modalTotal').textContent = '₱' + grandTotal.toFixed(2);
+    document.getElementById('osSubtotal').textContent = '₱' + subtotal.toFixed(2);
+    document.getElementById('osAddons').textContent = '₱' + addonTotal.toFixed(2);
+    document.getElementById('osQty').textContent = modalQtyVal;
 }
 
 document.getElementById('modalAddBtn').addEventListener('click', function() {
