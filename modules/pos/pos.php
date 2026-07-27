@@ -1110,6 +1110,94 @@ body.pos-page {
     color: #c8a96e;
 }
 
+.review-section-card {
+    border: 1.5px solid #ede5db;
+    border-radius: 14px;
+    background: #fffdfb;
+    margin-top: 10px;
+}
+.review-section-card .card-body {
+    padding: 14px 18px;
+}
+.review-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #ede5db;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: #2c1810;
+    background: #fffdfb;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.review-select:focus {
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+}
+.promo-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: stretch;
+}
+.review-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1.5px solid #ede5db;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: #2c1810;
+    background: #fffdfb;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.review-input:focus {
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+}
+.review-input::placeholder {
+    color: #b8a99a;
+}
+.review-apply-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4e342e, #3e2723);
+    color: #f5f0eb;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.review-apply-btn:hover {
+    box-shadow: 0 4px 16px rgba(78,52,46,0.3);
+}
+.cust-type-row {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 2px;
+}
+.cust-radio {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2c1810;
+    cursor: pointer;
+}
+.cust-radio input[type="radio"] {
+    accent-color: #4e342e;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
 .pos-checkout-btn {
     width: 100%;
     padding: 12px;
@@ -1473,9 +1561,9 @@ body.pos-page {
             </div>
             <div class="modal-body" style="padding:8px 24px 4px;" id="reviewModalBody">
             </div>
-            <div class="modal-footer" style="border-top:1px solid #ede5db;padding:14px 24px;background:#faf7f3;gap:10px;">
-                <button type="button" class="modal-btn modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="modal-btn modal-btn-primary" id="reviewProceedBtn" disabled>
+            <div class="modal-footer review-footer" style="border-top:1px solid #ede5db;padding:14px 24px;background:#faf7f3;gap:10px;">
+                <button type="button" class="modal-btn modal-btn-cancel" data-bs-dismiss="modal"><i class="bi bi-arrow-left me-2"></i>Continue Shopping</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="reviewProceedBtn">
                     <i class="bi bi-credit-card me-2"></i>Proceed to Payment
                 </button>
             </div>
@@ -1483,7 +1571,79 @@ body.pos-page {
     </div>
 </div>
 
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content" style="border-radius:18px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;">
+            <div class="modal-header" style="border:none;background:#faf7f3;padding:20px 24px 12px;">
+                <h5 class="modal-title" style="font-family:'Playfair Display',serif;font-weight:700;color:#2c1810;font-size:18px;">
+                    <i class="bi bi-credit-card me-2"></i>Payment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:16px 24px 8px;">
+                <div class="card review-summary-card">
+                    <div class="card-body">
+                        <div class="rsc-header">Payment Method</div>
+                        <div class="pmt-options">
+                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="cash" checked><span class="pmt-icon"><i class="bi bi-cash"></i></span> Cash</label>
+                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="card"><span class="pmt-icon"><i class="bi bi-credit-card-2-front"></i></span> Card</label>
+                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="gcash"><span class="pmt-icon"><i class="bi bi-phone"></i></span> GCash</label>
+                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="maya"><span class="pmt-icon"><i class="bi bi-wallet2"></i></span> Maya</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer review-footer" style="border-top:1px solid #ede5db;padding:14px 24px;background:#faf7f3;gap:10px;">
+                <button type="button" class="modal-btn modal-btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Cancel</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="processPaymentBtn">
+                    <i class="bi bi-check2-circle me-2"></i>Process Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+.pmt-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.pmt-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1.5px solid #ede5db;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c1810;
+    background: #fffdfb;
+}
+.pmt-option:hover {
+    border-color: #c8a96e;
+    background: #faf5ef;
+}
+.pmt-option input[type="radio"] {
+    accent-color: #4e342e;
+    width: 16px;
+    height: 16px;
+}
+.pmt-option .pmt-icon {
+    font-size: 20px;
+    color: #c8a96e;
+    width: 28px;
+    text-align: center;
+}
+.pmt-option:has(input:checked) {
+    border-color: #c8a96e;
+    background: #faf5ef;
+    box-shadow: 0 0 0 2px rgba(200,169,110,0.15);
+}
+
 .view-row {
     display: flex;
     justify-content: space-between;
@@ -1950,9 +2110,40 @@ function renderReviewBody() {
             <div class="card-body">
                 <div class="rsc-header">Order Summary</div>
                 <div class="rsc-row"><span>Subtotal</span><span>₱${subtotal.toFixed(2)}</span></div>
-                <div class="rsc-row"><span>Discount</span><span>₱0.00</span></div>
+                <div class="rsc-row"><span>Discount</span><span id="reviewDiscountDisplay">₱0.00</span></div>
                 <div class="rsc-row"><span>VAT</span><span>₱${tax.toFixed(2)}</span></div>
-                <div class="rsc-row rsc-grand-total"><span>Grand Total</span><span>₱${total.toFixed(2)}</span></div>
+                <div class="rsc-row rsc-grand-total"><span>Grand Total</span><span id="reviewGrandTotal">₱${total.toFixed(2)}</span></div>
+            </div>
+        </div>
+
+        <div class="card review-section-card">
+            <div class="card-body">
+                <div class="rsc-header">Discount</div>
+                <select class="review-select" id="discountType" onchange="onDiscountTypeChange()">
+                    <option value="none">None</option>
+                    <option value="senior">Senior Citizen</option>
+                    <option value="pwd">PWD</option>
+                    <option value="student">Student</option>
+                    <option value="employee">Employee</option>
+                    <option value="promo">Promo Code</option>
+                </select>
+                <div class="promo-row" id="promoCodeRow" style="display:none;">
+                    <input type="text" class="review-input" id="promoCodeInput" placeholder="Enter promo code">
+                    <button class="review-apply-btn" onclick="applyPromoCode()">Apply</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card review-section-card">
+            <div class="card-body">
+                <div class="rsc-header">Customer Information</div>
+                <div class="cust-type-row">
+                    <label class="cust-radio"><input type="radio" name="custType" value="walkin" checked onchange="onCustTypeChange()"> Walk-in Customer</label>
+                    <label class="cust-radio"><input type="radio" name="custType" value="registered" onchange="onCustTypeChange()"> Registered Customer</label>
+                </div>
+                <div class="promo-row" id="customerSearchRow" style="display:none;">
+                    <input type="text" class="review-input" id="customerSearchInput" placeholder="Search by name, email, or phone">
+                </div>
             </div>
         </div>`;
 }
@@ -1968,6 +2159,28 @@ function refreshReviewBody() {
     if (!modalEl.classList.contains('show')) return;
     document.getElementById('reviewModalBody').innerHTML = renderReviewBody();
 }
+
+function onDiscountTypeChange() {
+    const val = document.getElementById('discountType').value;
+    document.getElementById('promoCodeRow').style.display = val === 'promo' ? 'flex' : 'none';
+}
+
+function applyPromoCode() {
+    const code = document.getElementById('promoCodeInput').value.trim();
+    if (!code) return;
+}
+
+function onCustTypeChange() {
+    const val = document.querySelector('input[name="custType"]:checked').value;
+    document.getElementById('customerSearchRow').style.display = val === 'registered' ? 'flex' : 'none';
+}
+
+document.getElementById('reviewProceedBtn').addEventListener('click', function() {
+    const reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+    if (reviewModal) reviewModal.hide();
+    const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    paymentModal.show();
+});
 
 let reopenReviewModal = false;
 document.getElementById('customizeModal').addEventListener('hidden.bs.modal', function() {
