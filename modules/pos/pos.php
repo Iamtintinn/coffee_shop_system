@@ -953,6 +953,163 @@ body.pos-page {
     }
 }
 
+.review-card {
+    border: 1.5px solid #ede5db;
+    border-radius: 14px;
+    background: #fffdfb;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+.review-card-body {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+}
+.review-card-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    background: #f5f0eb;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.review-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.review-card-img svg {
+    width: 28px;
+    height: 28px;
+    color: #c8b8a8;
+}
+.review-card-info {
+    flex: 1;
+    min-width: 0;
+}
+.review-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c1810;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 6px;
+}
+.review-card-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 10px;
+    font-size: 12px;
+}
+.review-card-grid .rc-label {
+    color: #8b7d6b;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.review-card-grid .rc-value {
+    color: #2c1810;
+    font-weight: 500;
+}
+.review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #faf5ef;
+    border-top: 1px solid #ede5db;
+    font-size: 13px;
+}
+.review-card-footer .rc-qty {
+    color: #5d4037;
+    font-weight: 600;
+}
+.review-card-footer .rc-price {
+    color: #8b7d6b;
+}
+.review-card-footer .rc-subtotal {
+    color: #c8a96e;
+    font-weight: 700;
+    font-size: 15px;
+}
+.rc-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+.rc-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid #ede5db;
+    background: #fffdfb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    color: #8b7d6b;
+    padding: 0;
+}
+.rc-btn:hover {
+    background: #f5f0eb;
+    border-color: #d4c8b8;
+}
+.rc-edit:hover {
+    color: #4e342e;
+    border-color: #c8a96e;
+}
+.rc-remove:hover {
+    color: #c0392b;
+    border-color: #e8b4a8;
+    background: #fdf2f0;
+}
+
+.review-summary-card {
+    border: 1.5px solid #ede5db;
+    border-radius: 14px;
+    background: #fffdfb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.review-summary-card .card-body {
+    padding: 16px 18px;
+}
+.rsc-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c1810;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid #ede5db;
+}
+.rsc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #5d4037;
+    padding: 4px 0;
+}
+.rsc-row span:last-child {
+    font-weight: 600;
+}
+.rsc-grand-total {
+    font-size: 17px;
+    font-weight: 800;
+    color: #2c1810;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 2px solid #ede5db;
+}
+.rsc-grand-total span:last-child {
+    font-size: 20px;
+    font-weight: 800;
+    color: #c8a96e;
+}
+
 .pos-checkout-btn {
     width: 100%;
     padding: 12px;
@@ -1300,6 +1457,27 @@ body.pos-page {
             </div>
             <div class="modal-footer" style="border:none;padding:0 24px 20px;">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e0d5c9;background:transparent;color:#5d4037;font-weight:600;font-size:13px;font-family:'Inter',sans-serif;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content" style="border-radius:18px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;">
+            <div class="modal-header" style="border:none;background:#faf7f3;padding:20px 24px 12px;">
+                <h5 class="modal-title" style="font-family:'Playfair Display',serif;font-weight:700;color:#2c1810;font-size:18px;">
+                    <i class="bi bi-receipt me-2"></i>Review Order
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:8px 24px 4px;" id="reviewModalBody">
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #ede5db;padding:14px 24px;background:#faf7f3;gap:10px;">
+                <button type="button" class="modal-btn modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="reviewProceedBtn" disabled>
+                    <i class="bi bi-credit-card me-2"></i>Proceed to Payment
+                </button>
             </div>
         </div>
     </div>
@@ -1716,17 +1894,92 @@ function updateSummary() {
     document.getElementById('total').textContent = '₱' + total.toFixed(2);
 }
 
+function buildReviewCardHtml(item, i, getImgFn, sizeLbl, tempLbl, iceLbl) {
+    const addonNames = { addon_extra_shot:'Extra Shot', addon_vanilla:'Vanilla Syrup', addon_caramel:'Caramel Sauce', addon_whipped_cream:'Whipped Cream', addon_soy_milk:'Soy Milk', addon_almond_milk:'Almond Milk' };
+    const addons = (item.addons || []).map(a => addonNames[a] || a);
+    return `
+        <div class="review-card">
+            <div class="review-card-body">
+                <div class="review-card-img">${getImgFn(item.id)}</div>
+                <div class="review-card-info">
+                    <div class="review-card-name">${item.name}</div>
+                    <div class="review-card-grid">
+                        <span class="rc-label">Size</span><span class="rc-value">${sizeLbl[item.size] || item.size}</span>
+                        <span class="rc-label">Temperature</span><span class="rc-value">${tempLbl[item.temp] || item.temp}</span>
+                        <span class="rc-label">Sugar Level</span><span class="rc-value">${item.sugar}</span>
+                        <span class="rc-label">Ice Level</span><span class="rc-value">${iceLbl[item.ice] || item.ice}</span>
+                        <span class="rc-label">Add-ons</span><span class="rc-value">${addons.length ? addons.join(', ') : 'None'}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card-footer">
+                <span class="rc-qty">Qty: ${item.qty}</span>
+                <span class="rc-price">₱${item.price.toFixed(2)} each</span>
+                <span class="rc-subtotal">₱${(item.price * item.qty).toFixed(2)}</span>
+                <span class="rc-actions">
+                    <button class="rc-btn rc-edit" onclick="editCartItem(${i}); reopenReviewModal = true;" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="rc-btn rc-remove" onclick="removeFromCart(${i}); refreshReviewBody();" title="Remove"><i class="bi bi-trash3"></i></button>
+                </span>
+            </div>
+        </div>`;
+}
+
+function getItemImgHtml(id) {
+    const card = document.querySelector(`.product-card[data-id="${id}"]`);
+    if (card) {
+        const img = card.querySelector('.img-wrap img');
+        if (img) return '<img src="' + img.src + '" alt="">';
+    }
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="#c8b8a8" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+}
+
+function renderReviewBody() {
+    const sizeLabel = { small:'Small', medium:'Medium', large:'Large' };
+    const tempLabel = { hot:'Hot', iced:'Iced' };
+    const iceLabel = { none:'No Ice', less:'Less Ice', regular:'Regular Ice', extra:'Extra Ice' };
+    let itemsHtml = '';
+    cart.forEach((item, i) => {
+        itemsHtml += buildReviewCardHtml(item, i, getItemImgHtml, sizeLabel, tempLabel, iceLabel);
+    });
+    const subtotal = cart.reduce((s, item) => s + item.price * item.qty, 0);
+    const tax = subtotal * 0.12;
+    const total = subtotal + tax;
+    return `
+        <div style="margin-bottom:8px;">${itemsHtml}</div>
+        <div class="card review-summary-card">
+            <div class="card-body">
+                <div class="rsc-header">Order Summary</div>
+                <div class="rsc-row"><span>Subtotal</span><span>₱${subtotal.toFixed(2)}</span></div>
+                <div class="rsc-row"><span>Discount</span><span>₱0.00</span></div>
+                <div class="rsc-row"><span>VAT</span><span>₱${tax.toFixed(2)}</span></div>
+                <div class="rsc-row rsc-grand-total"><span>Grand Total</span><span>₱${total.toFixed(2)}</span></div>
+            </div>
+        </div>`;
+}
+
+function openReviewModal() {
+    document.getElementById('reviewModalBody').innerHTML = renderReviewBody();
+    const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    modal.show();
+}
+
+function refreshReviewBody() {
+    const modalEl = document.getElementById('reviewModal');
+    if (!modalEl.classList.contains('show')) return;
+    document.getElementById('reviewModalBody').innerHTML = renderReviewBody();
+}
+
+let reopenReviewModal = false;
+document.getElementById('customizeModal').addEventListener('hidden.bs.modal', function() {
+    if (reopenReviewModal) {
+        reopenReviewModal = false;
+        setTimeout(() => openReviewModal(), 150);
+    }
+});
+
 document.getElementById('checkoutBtn').addEventListener('click', function() {
     if (cart.length === 0) return;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-    this.disabled = true;
-    setTimeout(() => {
-        alert('Order placed successfully!');
-        cart = [];
-        renderCart();
-        this.innerHTML = '<i class="bi bi-credit-card me-2"></i>Checkout';
-        this.disabled = true;
-    }, 1500);
+    openReviewModal();
 });
 </script>
 
