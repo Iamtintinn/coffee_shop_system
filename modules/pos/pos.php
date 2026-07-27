@@ -655,6 +655,16 @@ body.pos-page {
     border-color: #4e342e !important;
     color: #f5f0eb !important;
 }
+.seg-addon {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    color: #c8a96e;
+    margin-top: 1px;
+}
+.seg-group input:checked + label .seg-addon {
+    color: #e8d5a8;
+}
 
 .addon-card {
     position: relative;
@@ -1389,12 +1399,12 @@ body.pos-page {
                     <div class="modal-option">
                         <span class="opt-label">Size</span>
                         <div class="seg-group">
-                            <input type="radio" class="size-opt" name="size" id="size-small" value="small" checked>
+                            <input type="radio" class="size-opt" name="size" id="size-small" value="small" data-price="0" checked>
                             <label for="size-small">Small</label>
-                            <input type="radio" class="size-opt" name="size" id="size-medium" value="medium">
-                            <label for="size-medium">Medium</label>
-                            <input type="radio" class="size-opt" name="size" id="size-large" value="large">
-                            <label for="size-large">Large</label>
+                            <input type="radio" class="size-opt" name="size" id="size-medium" value="medium" data-price="15">
+                            <label for="size-medium">Medium<span class="seg-addon">+₱15</span></label>
+                            <input type="radio" class="size-opt" name="size" id="size-large" value="large" data-price="25">
+                            <label for="size-large">Large<span class="seg-addon">+₱25</span></label>
                         </div>
                     </div>
                     <div class="modal-option" id="tempSection">
@@ -1581,14 +1591,66 @@ body.pos-page {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" style="padding:16px 24px 8px;">
-                <div class="card review-summary-card">
+                <div class="pmt-grand-total">
+                    <span class="pmt-gt-label">Grand Total</span>
+                    <span class="pmt-gt-value" id="pmtGrandTotal">₱0.00</span>
+                </div>
+
+                <div class="card review-summary-card" style="margin-top:14px;">
+                    <div class="card-body">
+                        <div class="rsc-header">Order Summary</div>
+                        <div class="rsc-row"><span>Subtotal</span><span id="pmtSubtotal">₱0.00</span></div>
+                        <div class="rsc-row"><span>Discount</span><span id="pmtDiscount">₱0.00</span></div>
+                        <div class="rsc-row"><span>VAT</span><span id="pmtTax">₱0.00</span></div>
+                        <div class="rsc-row rsc-grand-total" style="margin-top:8px;"><span>Grand Total</span><span id="pmtGrandTotalDisplay">₱0.00</span></div>
+                    </div>
+                </div>
+
+                <div class="card review-summary-card" style="margin-top:10px;">
                     <div class="card-body">
                         <div class="rsc-header">Payment Method</div>
                         <div class="pmt-options">
-                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="cash" checked><span class="pmt-icon"><i class="bi bi-cash"></i></span> Cash</label>
-                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="card"><span class="pmt-icon"><i class="bi bi-credit-card-2-front"></i></span> Card</label>
-                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="gcash"><span class="pmt-icon"><i class="bi bi-phone"></i></span> GCash</label>
-                            <label class="pmt-option"><input type="radio" name="pmtMethod" value="maya"><span class="pmt-icon"><i class="bi bi-wallet2"></i></span> Maya</label>
+                            <label class="pmt-option" onclick="document.getElementById('pmtCash').checked=true; onPmtMethodChange()">
+                                <input type="radio" name="pmtMethod" id="pmtCash" value="cash" checked onchange="onPmtMethodChange()">
+                                <span class="pmt-icon"><i class="bi bi-cash"></i></span>
+                                <span class="pmt-label">Cash</span>
+                            </label>
+                            <label class="pmt-option" onclick="document.getElementById('pmtGCash').checked=true; onPmtMethodChange()">
+                                <input type="radio" name="pmtMethod" id="pmtGCash" value="gcash" onchange="onPmtMethodChange()">
+                                <span class="pmt-icon"><i class="bi bi-phone"></i></span>
+                                <span class="pmt-label">GCash</span>
+                            </label>
+                            <label class="pmt-option" onclick="document.getElementById('pmtMaya').checked=true; onPmtMethodChange()">
+                                <input type="radio" name="pmtMethod" id="pmtMaya" value="maya" onchange="onPmtMethodChange()">
+                                <span class="pmt-icon"><i class="bi bi-wallet2"></i></span>
+                                <span class="pmt-label">Maya</span>
+                            </label>
+                            <label class="pmt-option" onclick="document.getElementById('pmtCreditCard').checked=true; onPmtMethodChange()">
+                                <input type="radio" name="pmtMethod" id="pmtCreditCard" value="credit_card" onchange="onPmtMethodChange()">
+                                <span class="pmt-icon"><i class="bi bi-credit-card-2-front"></i></span>
+                                <span class="pmt-label">Credit Card</span>
+                            </label>
+                            <label class="pmt-option" onclick="document.getElementById('pmtDebitCard').checked=true; onPmtMethodChange()">
+                                <input type="radio" name="pmtMethod" id="pmtDebitCard" value="debit_card" onchange="onPmtMethodChange()">
+                                <span class="pmt-icon"><i class="bi bi-credit-card-2-back"></i></span>
+                                <span class="pmt-label">Debit Card</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pmt-cash-section" id="pmtCashSection">
+                    <div class="pmt-cash-row">
+                        <div class="pmt-cash-field">
+                            <span class="pmt-cash-label">Cash Received</span>
+                            <div class="pmt-input-wrap">
+                                <span class="pmt-currency">₱</span>
+                                <input type="number" class="pmt-cash-input" id="cashReceived" placeholder="0.00" step="0.01" min="0" oninput="onCashReceivedChange()">
+                            </div>
+                        </div>
+                        <div class="pmt-change-display">
+                            <span class="pmt-cash-label">Change</span>
+                            <span class="pmt-change-value" id="changeDisplay">₱0.00</span>
                         </div>
                     </div>
                 </div>
@@ -1603,45 +1665,236 @@ body.pos-page {
     </div>
 </div>
 
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+        <div class="modal-content" style="border-radius:18px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;">
+            <div class="modal-body" style="padding:32px 28px;text-align:center;">
+                <div class="success-icon">&#10004;</div>
+                <div class="success-title">Payment Successful</div>
+                <div class="success-divider"></div>
+                <div class="success-details">
+                    <div class="s-detail"><span class="s-label">Receipt Number</span><span class="s-value" id="sReceipt">—</span></div>
+                    <div class="s-detail"><span class="s-label">Transaction Date</span><span class="s-value" id="sDate">—</span></div>
+                    <div class="s-detail s-detail-total"><span class="s-label">Grand Total</span><span class="s-value s-value-total" id="sTotal">₱0.00</span></div>
+                </div>
+                <div class="success-actions">
+                    <button type="button" class="modal-btn modal-btn-cancel" id="printReceiptBtn"><i class="bi bi-printer me-2"></i>Print Receipt</button>
+                    <button type="button" class="modal-btn modal-btn-primary" id="newOrderBtn"><i class="bi bi-cart-plus me-2"></i>New Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+.pmt-grand-total {
+    text-align: center;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #2c1810, #4e342e);
+    border-radius: 14px;
+}
+.pmt-gt-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c8a96e;
+    margin-bottom: 4px;
+}
+.pmt-gt-value {
+    display: block;
+    font-size: 34px;
+    font-weight: 800;
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+}
 .pmt-options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
 }
 .pmt-option {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border: 1.5px solid #ede5db;
-    border-radius: 12px;
+    gap: 8px;
+    padding: 18px 12px 14px;
+    border: 2px solid #ede5db;
+    border-radius: 14px;
     cursor: pointer;
     transition: all 0.15s;
-    font-size: 14px;
-    font-weight: 600;
-    color: #2c1810;
     background: #fffdfb;
+    position: relative;
 }
 .pmt-option:hover {
     border-color: #c8a96e;
     background: #faf5ef;
 }
 .pmt-option input[type="radio"] {
-    accent-color: #4e342e;
-    width: 16px;
-    height: 16px;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 .pmt-option .pmt-icon {
-    font-size: 20px;
+    font-size: 28px;
     color: #c8a96e;
-    width: 28px;
+    line-height: 1;
+}
+.pmt-option .pmt-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c1810;
     text-align: center;
+    line-height: 1.2;
 }
 .pmt-option:has(input:checked) {
     border-color: #c8a96e;
     background: #faf5ef;
     box-shadow: 0 0 0 2px rgba(200,169,110,0.15);
+}
+.pmt-option:has(input:checked) .pmt-label {
+    color: #4e342e;
+}
+
+.pmt-cash-section {
+    margin-top: 14px;
+    padding: 16px 18px;
+    background: #faf5ef;
+    border-radius: 14px;
+    border: 1.5px solid #ede5db;
+}
+.pmt-cash-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+.pmt-cash-field {
+    flex: 1;
+}
+.pmt-cash-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8b7d6b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+}
+.pmt-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.pmt-currency {
+    position: absolute;
+    left: 14px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c1810;
+    pointer-events: none;
+}
+.pmt-cash-input {
+    width: 100%;
+    padding: 12px 14px 12px 34px;
+    border: 2px solid #ede5db;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: #2c1810;
+    background: #fffdfb;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.pmt-cash-input:focus {
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+}
+.pmt-cash-input::placeholder {
+    color: #d4c8b8;
+    font-weight: 400;
+}
+.pmt-change-display {
+    min-width: 160px;
+    text-align: center;
+    padding: 12px 16px;
+    background: #fffdfb;
+    border-radius: 12px;
+    border: 2px solid #ede5db;
+}
+.pmt-change-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: #27ae60;
+    margin-top: 2px;
+    font-family: 'Playfair Display', serif;
+}
+
+.success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: #fff;
+    font-size: 32px;
+    line-height: 64px;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 24px rgba(39,174,96,0.25);
+}
+.success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c1810;
+    margin-bottom: 14px;
+}
+.success-divider {
+    width: 40px;
+    height: 3px;
+    background: #c8a96e;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+}
+.success-details {
+    text-align: left;
+}
+.s-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid #f0ebe5;
+    font-size: 13px;
+}
+.s-detail:last-of-type {
+    border-bottom: none;
+}
+.s-label {
+    color: #8b7d6b;
+    font-weight: 500;
+}
+.s-value {
+    font-weight: 600;
+    color: #2c1810;
+}
+.s-detail-total {
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1.5px solid #ede5db;
+}
+.s-value-total {
+    font-size: 18px;
+    font-weight: 800;
+    color: #c8a96e;
+}
+.success-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+.success-actions .modal-btn {
+    flex: 1;
 }
 
 .view-row {
@@ -1828,13 +2081,20 @@ function collectModalSelections() {
     const sugar = document.querySelector('.sugar-opt:checked');
     const ice = document.querySelector('.ice-opt:checked');
     const addons = [];
-    document.querySelectorAll('#modalAddons input[type="checkbox"]:checked').forEach(c => addons.push(c.id));
+    let addonTotal = 0;
+    document.querySelectorAll('#modalAddons input[type="checkbox"]:checked').forEach(c => {
+        addons.push(c.id);
+        addonTotal += parseFloat(c.dataset.price) || 0;
+    });
+    const sizePrice = parseFloat(size ? size.dataset.price : 0) || 0;
     return {
         size: size ? size.value : 'small',
+        sizePrice: sizePrice,
         temp: temp ? temp.value : 'hot',
         sugar: sugar ? sugar.value : '50%',
         ice: ice ? ice.value : 'regular',
         addons: addons,
+        addonTotal: addonTotal,
         instructions: document.getElementById('modalInstructions').value
     };
 }
@@ -1846,15 +2106,18 @@ function modalQtyChange(delta) {
 }
 
 function updateModalTotal() {
-    const subtotal = modalProductPrice * modalQtyVal;
+    const sizeEl = document.querySelector('.size-opt:checked');
+    const sizePrice = parseFloat(sizeEl ? sizeEl.dataset.price : 0) || 0;
+    const baseTotal = modalProductPrice * modalQtyVal;
+    const sizeTotal = sizePrice * modalQtyVal;
     let addonTotal = 0;
     document.querySelectorAll('#modalAddons input[type="checkbox"]:checked').forEach(c => {
         addonTotal += parseFloat(c.dataset.price) || 0;
     });
     addonTotal *= modalQtyVal;
-    const grandTotal = subtotal + addonTotal;
+    const grandTotal = baseTotal + sizeTotal + addonTotal;
     document.getElementById('modalTotal').textContent = '₱' + grandTotal.toFixed(2);
-    document.getElementById('osSubtotal').textContent = '₱' + subtotal.toFixed(2);
+    document.getElementById('osSubtotal').textContent = '₱' + (modalProductPrice * modalQtyVal).toFixed(2);
     document.getElementById('osAddons').textContent = '₱' + addonTotal.toFixed(2);
     document.getElementById('osQty').textContent = modalQtyVal;
 }
@@ -1863,13 +2126,17 @@ document.getElementById('modalAddBtn').addEventListener('click', function() {
     if (!modalProductId) return;
 
     const sel = collectModalSelections();
+    const unitPrice = modalProductPrice + sel.sizePrice + sel.addonTotal;
 
-    if (modalEditIndex != null && cart[modalEditIndex]) {
-        cart[modalEditIndex] = {
+    function makeCartItem(qty) {
+        return {
             id: modalProductId,
             name: modalProductName,
-            price: modalProductPrice,
-            qty: modalQtyVal,
+            basePrice: modalProductPrice,
+            sizePrice: sel.sizePrice,
+            addonTotal: sel.addonTotal,
+            price: unitPrice,
+            qty: qty,
             size: sel.size,
             temp: sel.temp,
             sugar: sel.sugar,
@@ -1877,6 +2144,10 @@ document.getElementById('modalAddBtn').addEventListener('click', function() {
             addons: sel.addons,
             instructions: sel.instructions
         };
+    }
+
+    if (modalEditIndex != null && cart[modalEditIndex]) {
+        cart[modalEditIndex] = makeCartItem(modalQtyVal);
     } else {
         const existingIdx = cart.findIndex(item => item.id === modalProductId
             && item.size === sel.size
@@ -1887,18 +2158,7 @@ document.getElementById('modalAddBtn').addEventListener('click', function() {
         if (existingIdx > -1) {
             cart[existingIdx].qty += modalQtyVal;
         } else {
-            cart.push({
-                id: modalProductId,
-                name: modalProductName,
-                price: modalProductPrice,
-                qty: modalQtyVal,
-                size: sel.size,
-                temp: sel.temp,
-                sugar: sel.sugar,
-                ice: sel.ice,
-                addons: sel.addons,
-                instructions: sel.instructions
-            });
+            cart.push(makeCartItem(modalQtyVal));
         }
     }
 
@@ -1957,7 +2217,7 @@ function openViewModal(index) {
 function editCartItem(index) {
     const item = cart[index];
     if (!item) return;
-    openCustomizationModal(item.id, item.name, item.price, index);
+    openCustomizationModal(item.id, item.name, item.basePrice || item.price, index);
 }
 
 function addToCart(id, name, price) {
@@ -1965,7 +2225,7 @@ function addToCart(id, name, price) {
     if (existing) {
         existing.qty++;
     } else {
-        cart.push({ id, name, price, qty: 1 });
+        cart.push({ id, name, basePrice: price, sizePrice: 0, addonTotal: 0, price: price, qty: 1 });
     }
     renderCart();
 
@@ -2109,9 +2369,9 @@ function renderReviewBody() {
         <div class="card review-summary-card">
             <div class="card-body">
                 <div class="rsc-header">Order Summary</div>
-                <div class="rsc-row"><span>Subtotal</span><span>₱${subtotal.toFixed(2)}</span></div>
+                <div class="rsc-row"><span>Subtotal</span><span id="reviewSubtotal">₱${subtotal.toFixed(2)}</span></div>
                 <div class="rsc-row"><span>Discount</span><span id="reviewDiscountDisplay">₱0.00</span></div>
-                <div class="rsc-row"><span>VAT</span><span>₱${tax.toFixed(2)}</span></div>
+                <div class="rsc-row"><span>VAT</span><span id="reviewVat">₱${tax.toFixed(2)}</span></div>
                 <div class="rsc-row rsc-grand-total"><span>Grand Total</span><span id="reviewGrandTotal">₱${total.toFixed(2)}</span></div>
             </div>
         </div>
@@ -2176,10 +2436,74 @@ function onCustTypeChange() {
 }
 
 document.getElementById('reviewProceedBtn').addEventListener('click', function() {
+    function readVal(id) {
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.textContent.replace(/[₱,]/g, '')) || 0 : 0;
+    }
+    const subtotal = readVal('reviewSubtotal');
+    const discount = readVal('reviewDiscountDisplay');
+    const tax = readVal('reviewVat');
+    const grandTotal = readVal('reviewGrandTotal');
+
+    document.getElementById('pmtSubtotal').textContent = '₱' + subtotal.toFixed(2);
+    document.getElementById('pmtDiscount').textContent = '₱' + discount.toFixed(2);
+    document.getElementById('pmtTax').textContent = '₱' + tax.toFixed(2);
+    document.getElementById('pmtGrandTotal').textContent = '₱' + grandTotal.toFixed(2);
+    document.getElementById('pmtGrandTotalDisplay').textContent = '₱' + grandTotal.toFixed(2);
+    document.getElementById('cashReceived').value = '';
+    document.getElementById('changeDisplay').textContent = '₱0.00';
+
     const reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
     if (reviewModal) reviewModal.hide();
     const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
     paymentModal.show();
+});
+
+function onPmtMethodChange() {
+    const cash = document.getElementById('pmtCash').checked;
+    document.getElementById('pmtCashSection').style.display = cash ? 'block' : 'none';
+    if (!cash) {
+        document.getElementById('cashReceived').value = '';
+        document.getElementById('changeDisplay').textContent = '₱0.00';
+    }
+}
+
+function onCashReceivedChange() {
+    const gtEl = document.getElementById('pmtGrandTotal');
+    const grandTotal = parseFloat(gtEl.textContent.replace(/[₱,]/g, '')) || 0;
+    const received = parseFloat(document.getElementById('cashReceived').value) || 0;
+    const change = Math.max(0, received - grandTotal);
+    document.getElementById('changeDisplay').textContent = '₱' + change.toFixed(2);
+}
+
+document.getElementById('processPaymentBtn').addEventListener('click', function() {
+    const gtEl = document.getElementById('pmtGrandTotal');
+    const grandTotal = gtEl.textContent;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) + ' ' + now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
+    const receiptNum = 'POS-' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + String(Math.floor(Math.random() * 9999) + 1).padStart(4,'0');
+
+    document.getElementById('sReceipt').textContent = receiptNum;
+    document.getElementById('sDate').textContent = dateStr;
+    document.getElementById('sTotal').textContent = grandTotal;
+
+    const pmtModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+    if (pmtModal) pmtModal.hide();
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+});
+
+document.getElementById('newOrderBtn').addEventListener('click', function() {
+    cart = [];
+    renderCart();
+    const successModal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+    if (successModal) successModal.hide();
+    const pmtModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+    if (pmtModal) pmtModal.hide();
+});
+
+document.getElementById('printReceiptBtn').addEventListener('click', function() {
 });
 
 let reopenReviewModal = false;
