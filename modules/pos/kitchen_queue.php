@@ -62,6 +62,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_order_history') {
+    header('Content-Type: application/json');
+    try {
+        $stmt = $pdo->query("
+            SELECT o.order_id, o.customer_name, o.total_amount, o.status, o.created_at,
+                   u.full_name AS cashier_name,
+                   t.receipt_number, t.payment_method, t.discount_type, t.discount_amount
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.user_id
+            LEFT JOIN transactions t ON o.order_id = t.order_id
+            WHERE o.status = 'completed'
+            ORDER BY o.created_at DESC
+            LIMIT 100
+        ");
+        $orders = $stmt->fetchAll();
+
+        foreach ($orders as &$order) {
+            $stmt = $pdo->prepare("SELECT * FROM order_items WHERE order_id = ?");
+            $stmt->execute([$order['order_id']]);
+            $items = $stmt->fetchAll();
+
+            foreach ($items as &$item) {
+                $stmt = $pdo->prepare("SELECT * FROM order_addons WHERE order_item_id = ?");
+                $stmt->execute([$item['order_item_id']]);
+                $item['addons'] = $stmt->fetchAll();
+            }
+
+            $order['items'] = $items;
+        }
+        unset($order, $item);
+
+        echo json_encode(['success' => true, 'orders' => $orders]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $page_title = 'Kitchen Queue';
 $body_class = 'kitchen-queue-page';
 require_once __DIR__ . '/../../includes/header.php';
@@ -388,6 +426,58 @@ html, body {
         padding: 14px;
     }
 }
+.kq-modal-content {
+    background: #2c1810;
+    color: #f5f0eb;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+}
+.kq-modal-content .modal-header {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 20px;
+}
+.kq-modal-content .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--kq-gold);
+}
+.kq-modal-content .modal-body {
+    padding: 16px 20px;
+}
+.kq-modal-content .btn-close-white {
+    opacity: 0.5;
+}
+.hist-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.hist-item:last-child {
+    border-bottom: none;
+}
+.hist-item-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+.hist-item-qty {
+    color: var(--kq-gold);
+    font-weight: 700;
+}
+.hist-item-cust {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    margin-left: 8px;
+    margin-top: 2px;
+}
+.hist-addon-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(200,169,110,0.1);
+    color: var(--kq-gold);
+    font-size: 10px;
+    font-weight: 500;
+    margin-right: 4px;
+}
 </style>
 
 <div class="kq-header">
@@ -404,6 +494,7 @@ html, body {
     </div>
     <div class="kq-header-right">
         <span class="kq-clock" id="kqClock"></span>
+        <button class="kq-back-btn" onclick="openOrderHistory()"><i class="bi bi-clock-history me-1"></i>Order History</button>
         <a href="pos.php" class="kq-back-btn"><i class="bi bi-arrow-left"></i>Back to POS</a>
     </div>
 </div>
@@ -412,6 +503,19 @@ html, body {
     <div class="kq-grid" id="kqGrid"></div>
 </div>
 
+<div class="modal fade" id="orderHistoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content kq-modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-clock-history me-2"></i>Order History</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderHistoryBody"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const statusLabels = { pending: 'Pending', preparing: 'Preparing', ready: 'Ready for Pickup', completed: 'Completed' };
 const nextStatus = { pending: 'preparing', preparing: 'ready', ready: 'completed' };
@@ -531,6 +635,98 @@ function updateClock() {
     const time = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     const date = now.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
     document.getElementById('kqClock').textContent = date + ' ' + time;
+}
+
+/* ── Order History ── */
+let historyModalInstance = null;
+
+function openOrderHistory() {
+    if (!historyModalInstance) {
+        historyModalInstance = new bootstrap.Modal(document.getElementById('orderHistoryModal'));
+    }
+    document.getElementById('orderHistoryBody').innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);"><div class="spinner-border" role="status"></div><p class="mt-2">Loading history...</p></div>';
+    historyModalInstance.show();
+    fetchOrderHistory();
+}
+
+function fetchOrderHistory() {
+    fetch(window.location.pathname + '?action=get_order_history')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            renderOrderHistory(data.orders);
+        })
+        .catch(() => {});
+}
+
+function formatCustomizations(item) {
+    const parts = [];
+    if (item.size) parts.push(item.size);
+    if (item.temperature) parts.push(item.temperature);
+    if (item.sugar_level && item.sugar_level !== 'regular') parts.push('Sugar: ' + item.sugar_level);
+    if (item.ice_level && item.ice_level !== 'regular') parts.push('Ice: ' + item.ice_level);
+    if (item.instructions) parts.push('Note: ' + item.instructions);
+    return parts.length ? parts.join(' &middot; ') : '';
+}
+
+function renderOrderHistory(orders) {
+    const container = document.getElementById('orderHistoryBody');
+    if (!orders.length) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.2);"><i class="bi bi-inbox" style="font-size:36px;display:block;margin-bottom:10px;"></i><p>No completed orders yet.</p></div>';
+        return;
+    }
+    let html = '';
+    orders.forEach(o => {
+        const items = o.items || [];
+        const grandTotal = parseFloat(o.total_amount || 0).toFixed(2);
+        const dt = o.created_at || '';
+        const pmt = o.payment_method ? o.payment_method.charAt(0).toUpperCase() + o.payment_method.slice(1) : '—';
+        const rec = o.receipt_number || '—';
+        const cashier = o.cashier_name || 'Unknown';
+        const customer = o.customer_name || 'Walk-in';
+        const qnum = String(o.order_id).padStart(3, '0');
+
+        let itemsHtml = '';
+        items.forEach(item => {
+            const qty = item.quantity || 1;
+            const price = parseFloat(item.price || 0).toFixed(2);
+            const cust = formatCustomizations(item);
+            const addons = item.addons || [];
+            let addonHtml = '';
+            addons.forEach(a => {
+                addonHtml += '<span class="hist-addon-tag">+' + a.addon_name + ' (₱' + parseFloat(a.price || 0).toFixed(2) + ')</span>';
+            });
+
+            itemsHtml += '<div class="hist-item">'
+                + '<div><span class="hist-item-name">' + (item.product_name || 'Product') + ' <span class="hist-item-qty">x' + qty + '</span></span> <span style="float:right;font-weight:600;">₱' + (qty * price).toFixed(2) + '</span></div>';
+            if (cust) {
+                itemsHtml += '<div class="hist-item-cust">' + cust + '</div>';
+            }
+            if (addonHtml) {
+                itemsHtml += '<div class="hist-item-cust">' + addonHtml + '</div>';
+            }
+            itemsHtml += '</div>';
+        });
+
+        html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px;margin-bottom:10px;">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+            + '<div><span style="display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:22px;padding:0 7px;border-radius:5px;background:var(--kq-gold);color:#1a0f0a;font-size:12px;font-weight:800;margin-right:8px;">Q' + qnum + '</span><span style="font-size:11px;color:rgba(255,255,255,0.35);">' + rec + '</span></div>'
+            + '<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:2px 8px;border-radius:4px;background:rgba(46,204,113,0.15);color:#2ecc71;">Completed</span>'
+            + '</div>'
+            + '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">'
+            + '<span><i class="bi bi-person me-1"></i>' + customer + '</span>'
+            + '<span><i class="bi bi-person-badge me-1"></i>' + cashier + '</span>'
+            + '<span><i class="bi bi-credit-card me-1"></i>' + pmt + '</span>'
+            + '<span><i class="bi bi-clock me-1"></i>' + dt + '</span>'
+            + '</div>'
+            + '<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;">' + itemsHtml + '</div>'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">'
+            + '<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#2ecc71;padding:2px 8px;border-radius:4px;background:rgba(46,204,113,0.1);">Paid</span>'
+            + '<span style="font-size:18px;font-weight:800;color:var(--kq-gold);">₱' + grandTotal + '</span>'
+            + '</div>'
+            + '</div>';
+    });
+    container.innerHTML = html;
 }
 
 document.addEventListener('DOMContentLoaded', function() {

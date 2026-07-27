@@ -1810,7 +1810,6 @@ body.pos-page {
 
         <div class="pos-sidebar-tabs">
             <button class="s-tab active" data-stab="menu" onclick="switchSTab('menu', this)"><i class="bi bi-menu-app me-1"></i>Menu</button>
-            <button class="s-tab" data-stab="history" onclick="switchSTab('history', this)"><i class="bi bi-archive me-1"></i>History</button>
         </div>
 
         <div class="pos-categories" id="stabMenu">
@@ -1826,9 +1825,6 @@ body.pos-page {
             <?php endforeach; ?>
         </div>
 
-        <div class="pos-history" id="stabHistory" style="display:none;">
-            <div id="orderHistoryList"></div>
-        </div>
     </aside>
 
     <main class="pos-menu">
@@ -3110,8 +3106,6 @@ function switchSTab(tab, btn) {
     document.querySelectorAll('.s-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('stabMenu').style.display = tab === 'menu' ? '' : 'none';
-    document.getElementById('stabHistory').style.display = tab === 'history' ? '' : 'none';
-    if (tab === 'history') fetchOrderHistory();
 }
 
 function fetchOrders() {
